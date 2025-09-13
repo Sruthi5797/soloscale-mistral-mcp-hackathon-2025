@@ -205,4 +205,29 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
-.DS-Store
+
+# Nestjs specific
+/dist
+poseflow_mcp/node_modules
+poseflow_mcp/src/poseflow_backend/node_modules
+/build
+/tmp
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# dotenv environment variable files
+.env
+.env.development
+.env.test
+.env.production
+
+# temp directory
+.temp
+.tmp
