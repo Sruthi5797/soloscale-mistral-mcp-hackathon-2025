@@ -7,7 +7,7 @@ name = "poseflow-mcp"
 version = "0.1.0"
 description = "soloscale_poseflow — Yoga posture MCP (HTTP streamable)"
 readme = "README.md"
-requires-python = ">=3.10,<3.13"  # avoid 3.13-only oddities for now
+requires-python = ">=3.10"
 
 # Minimal deps just to boot HTTP + MCP (add mediapipe/opencv later)
 dependencies = [
