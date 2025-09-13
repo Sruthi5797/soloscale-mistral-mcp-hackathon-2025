@@ -1,6 +1,19 @@
 """
-Yoga Class Sequencing MCP Server
-Creates personalized yoga class sequences with semantic search from Qdrant database
+Yoga Teacher Sequencing MCP Server
+
+OVERVIEW:
+This MCP server helps yoga teachers create effective class sequences by combining:
+1. Built-in sequencing templates for different yoga styles
+2. Qdrant vector database integration for pose discovery
+3. Semantic search for finding poses based on natural language queries
+
+PROCESS STEPS:
+1. Create basic sequences using predefined templates
+2. Search for specific poses using semantic queries
+3. Generate inspiring class themes and intentions
+4. Access pose details and variations from the database
+
+The server focuses purely on helping yoga teachers plan and sequence their classes effectively.
 """
 
 from mcp.server.fastmcp import FastMCP
@@ -8,27 +21,36 @@ from pydantic import Field
 import os
 import json
 from typing import List, Dict, Optional
+from qdrant_client import QdrantClient
+from sentence_transformers import SentenceTransformer
 import mcp.types as types
 
 # Initialize FastMCP server
-mcp = FastMCP("Yoga Sequencing Server", port=3000, stateless_http=True, debug=True)
+mcp = FastMCP("Yoga Teacher Sequencing Server", port=3000, stateless_http=True, debug=True)
 
-# # Initialize Qdrant client (commented out)
-# def get_qdrant_client():
-#     """Initialize Qdrant client with environment variables"""
-#     qdrant_url = os.getenv("QDRANT_URL")
-#     qdrant_api_key = os.getenv("QDRANT_API_KEY")
-    
-#     if not qdrant_url:
-#         raise ValueError("QDRANT_URL environment variable not set")
-    
-#     return QdrantClient(
-#         url=qdrant_url,
-#         api_key=qdrant_api_key,
-#         timeout=30
-#     )
+# Initialize embedding model for semantic search
+embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
-# Yoga sequence templates for different styles and purposes
+# Initialize Qdrant client
+def get_qdrant_client():
+    """Initialize Qdrant client with environment variables.
+    
+    Returns:
+        QdrantClient: Configured client for vector database operations
+    """
+    qdrant_url = os.getenv("QDRANT_URL")
+    qdrant_api_key = os.getenv("QDRANT_API_KEY")
+    
+    if not qdrant_url:
+        raise ValueError("QDRANT_URL environment variable not set")
+    
+    return QdrantClient(
+        url=qdrant_url,
+        api_key=qdrant_api_key,
+        timeout=30
+    )
+
+
 SEQUENCE_TEMPLATES = {
     "hatha": {
         "beginner": {
@@ -81,19 +103,23 @@ def create_yoga_sequence(
     style: str = Field(description="Yoga style: hatha, vinyasa, or stress_relief"),
     focus: str = Field(description="Class focus (optional): hip_opening, backbends, strength, flexibility", default="balanced")
 ) -> Dict:
-    """Create a customized yoga sequence"""
+    """Create a customized yoga sequence using predefined templates.
+
+    Args:
+        duration_minutes: Class duration in minutes (5-90)
+        level: Student level: beginner, intermediate, or advanced
+        style: Yoga style: hatha, vinyasa, or stress_relief
+        focus: Class focus area for targeted sequencing
+    """
     
-    # Validate inputs
     if duration_minutes < 5 or duration_minutes > 90:
         return {"error": "Duration must be between 5 and 90 minutes"}
     
     if style not in SEQUENCE_TEMPLATES:
         return {"error": f"Style must be one of: {list(SEQUENCE_TEMPLATES.keys())}"}
     
-    # Get appropriate template
     style_template = SEQUENCE_TEMPLATES[style]
     
-    # For stress relief, use all_levels template
     if style == "stress_relief":
         level = "all_levels"
     
@@ -103,10 +129,8 @@ def create_yoga_sequence(
     
     template = style_template[level]
     
-    # Calculate time allocation based on duration
     time_allocation = calculate_time_allocation(duration_minutes, style)
     
-    # Build sequence
     sequence = {
         "class_info": {
             "duration": duration_minutes,
@@ -136,48 +160,165 @@ def create_yoga_sequence(
     return sequence
 
 
-# @mcp.tool(
-#     title="Semantic Pose Search",
-#     description="Search yoga poses using natural language descriptions with semantic similarity"
-# )
-# def semantic_pose_search(
-#     query: str = Field(description="Natural language search query (e.g., 'poses for tight hips', 'calming poses for stress')")
-# ) -> List[Dict]:
-#     """Search poses using semantic similarity from Qdrant vector database"""
+@mcp.tool(
+    title="Search Poses Semantically",
+    description="Find yoga poses using natural language descriptions with semantic similarity"
+)
+def search_poses_semantically(
+    query: str = Field(description="Natural language search query (e.g., 'poses for tight hips', 'calming poses for stress')")
+) -> List[Dict]:
+    """Search poses using semantic similarity from Qdrant vector database.
+
+    Args:
+        query: Natural language search query describing desired poses or benefits
+    """
     
-#     try:
-#         client = get_qdrant_client()
-#         collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
+    try:
+        client = get_qdrant_client()
+        collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
         
-#         # Convert query to embedding vector
-#         query_vector = embedding_model.encode(query).tolist()
+        # Convert query to embedding vector
+        query_vector = embedding_model.encode(query).tolist()
         
-#         # Perform semantic search using vector similarity
-#         search_result = client.search(
-#             collection_name=collection_name,
-#             query_vector=query_vector,
-#             limit=10,
-#             with_payload=True,
-#             score_threshold=0.3  # Minimum similarity threshold
-#         )
+        # Perform semantic search using vector similarity
+        search_result = client.search(
+            collection_name=collection_name,
+            query_vector=query_vector,
+            limit=10,
+            with_payload=True,
+            score_threshold=0.3  # Minimum similarity threshold
+        )
         
-#         poses = []
-#         for hit in search_result:
-#             pose_data = hit.payload
-#             poses.append({
-#                 "pose_name": pose_data.get("name", ""),
-#                 "sanskrit_name": pose_data.get("sanskrit_name", ""),
-#                 "expertise_level": pose_data.get("expertise_level", ""),
-#                 "pose_type": pose_data.get("pose_type", []),
-#                 "photo_url": pose_data.get("photo_url", ""),
-#                 "relevance_score": round(hit.score, 3),
-#                 "has_photo": pose_data.get("metadata", {}).get("has_photo", False)
-#             })
+        poses = []
+        for hit in search_result:
+            pose_data = hit.payload
+            poses.append({
+                "pose_name": pose_data.get("name", ""),
+                "sanskrit_name": pose_data.get("sanskrit_name", ""),
+                "expertise_level": pose_data.get("expertise_level", ""),
+                "pose_type": pose_data.get("pose_type", []),
+                "photo_url": pose_data.get("photo_url", ""),
+                "relevance_score": round(hit.score, 3),
+                "has_photo": pose_data.get("metadata", {}).get("has_photo", False)
+            })
         
-#         return poses
+        return poses
         
-#     except Exception as e:
-#         return [{"error": f"Failed to perform semantic search: {str(e)}"}]
+    except Exception as e:
+        return [{"error": f"Failed to perform semantic search: {str(e)}"}]
+
+
+@mcp.tool(
+    title="Get Pose Details",
+    description="Retrieve detailed information about a specific yoga pose"
+)
+def get_pose_details(
+    pose_name: str = Field(description="Name of the yoga pose (e.g., 'Downward Dog', 'Tree Pose')")
+) -> Dict:
+    """Get detailed information about a yoga pose from Qdrant database.
+
+    Args:
+        pose_name: Name of the yoga pose to look up
+    """
+    
+    try:
+        client = get_qdrant_client()
+        collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
+        
+        # Search for the pose in Qdrant using name matching
+        search_result = client.scroll(
+            collection_name=collection_name,
+            scroll_filter={
+                "must": [
+                    {
+                        "key": "name",
+                        "match": {"text": pose_name}
+                    }
+                ]
+            },
+            limit=1,
+            with_payload=True
+        )
+        
+        if not search_result[0]:
+            return {"error": f"Pose '{pose_name}' not found in database"}
+        
+        pose_data = search_result[0][0].payload
+        
+        return {
+            "pose_name": pose_data.get("name", pose_name),
+            "sanskrit_name": pose_data.get("sanskrit_name", ""),
+            "expertise_level": pose_data.get("expertise_level", ""),
+            "pose_type": pose_data.get("pose_type", []),
+            "photo_url": pose_data.get("photo_url", ""),
+            "metadata": pose_data.get("metadata", {}),
+            "id": pose_data.get("id", "")
+        }
+        
+    except Exception as e:
+        return {"error": f"Failed to retrieve pose details: {str(e)}"}
+
+
+@mcp.tool(
+    title="Find Poses by Type",
+    description="Search yoga poses by category and expertise level"
+)
+def find_poses_by_type(
+    pose_type: str = Field(description="Pose type: Standing, Forward Bend, Backbend, Twist, Inversion, Arm Balance, etc."),
+    expertise_level: str = Field(description="Expertise level: Beginner, Intermediate, Advanced", default="all")
+) -> List[Dict]:
+    """Search for poses by type and expertise level from Qdrant database.
+
+    Args:
+        pose_type: Category of poses to find
+        expertise_level: Difficulty level filter for poses
+    """
+    
+    try:
+        client = get_qdrant_client()
+        collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
+        
+        # Build filter - pose_type is an array field
+        filter_conditions = [
+            {
+                "key": "pose_type",
+                "match": {"any": [pose_type]}
+            }
+        ]
+        
+        if expertise_level != "all":
+            filter_conditions.append({
+                "key": "expertise_level", 
+                "match": {"text": expertise_level}
+            })
+        
+        search_result = client.scroll(
+            collection_name=collection_name,
+            scroll_filter={"must": filter_conditions},
+            limit=15,
+            with_payload=True
+        )
+        
+        poses = []
+        for point in search_result[0]:
+            pose_data = point.payload
+            poses.append({
+                "pose_name": pose_data.get("name", ""),
+                "sanskrit_name": pose_data.get("sanskrit_name", ""),
+                "expertise_level": pose_data.get("expertise_level", ""),
+                "pose_type": pose_data.get("pose_type", []),
+                "photo_url": pose_data.get("photo_url", ""),
+                "has_photo": pose_data.get("metadata", {}).get("has_photo", False)
+            })
+        
+        return poses
+        
+    except Exception as e:
+        return [{"error": f"Failed to search poses: {str(e)}"}]
+
+
+# Sequence templates kept as fallback data when Qdrant is not available
+# These provide reliable pose sequences for different yoga styles and levels
 
 
 @mcp.resource(
@@ -186,7 +327,12 @@ def create_yoga_sequence(
     name="Sequence Template"
 )
 def get_sequence_template(style: str, level: str) -> str:
-    """Get a sequence template"""
+    """Get a sequence template for planning classes.
+
+    Args:
+        style: Yoga style (hatha, vinyasa, stress_relief)
+        level: Student level (beginner, intermediate, advanced)
+    """
     
     if style in SEQUENCE_TEMPLATES:
         style_templates = SEQUENCE_TEMPLATES[style]
@@ -195,144 +341,6 @@ def get_sequence_template(style: str, level: str) -> str:
             return json.dumps(template, indent=2)
     
     return json.dumps({"error": "Template not found"})
-
-
-# @mcp.resource(
-#     uri="poses://type/{pose_type}",
-#     description="Get list of poses by type (Standing, Forward Bend, etc.)",
-#     name="Poses by Type"
-# )
-# def get_poses_by_type_resource(pose_type: str) -> str:
-#     """Resource to get poses by type"""
-    
-#     try:
-#         client = get_qdrant_client()
-#         collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
-        
-#         search_result = client.scroll(
-#             collection_name=collection_name,
-#             scroll_filter={
-#                 "must": [
-#                     {
-#                         "key": "pose_type",
-#                         "match": {"any": [pose_type]}
-#                     }
-#                 ]
-#             },
-#             limit=15,
-#             with_payload=True
-#         )
-        
-#         poses = []
-#         for point in search_result[0]:
-#             pose_data = point.payload
-#             poses.append({
-#                 "name": pose_data.get("name", ""),
-#                 "sanskrit_name": pose_data.get("sanskrit_name", ""),
-#                 "expertise_level": pose_data.get("expertise_level", ""),
-#                 "has_photo": pose_data.get("metadata", {}).get("has_photo", False)
-#             })
-        
-#         return json.dumps({
-#             "pose_type": pose_type, 
-#             "total_poses": len(poses),
-#             "poses": poses
-#         }, indent=2)
-        
-#     except Exception as e:
-#         return json.dumps({"error": f"Failed to get poses: {str(e)}"})
-
-
-# @mcp.resource(
-#     uri="poses://expertise/{level}",
-#     description="Get poses by expertise level (Beginner, Intermediate, Advanced)",
-#     name="Poses by Expertise Level"
-# )
-# def get_poses_by_expertise_resource(level: str) -> str:
-#     """Resource to get poses by expertise level"""
-    
-#     try:
-#         client = get_qdrant_client()
-#         collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
-        
-#         search_result = client.scroll(
-#             collection_name=collection_name,
-#             scroll_filter={
-#                 "must": [
-#                     {
-#                         "key": "expertise_level",
-#                         "match": {"text": level}
-#                     }
-#                 ]
-#             },
-#             limit=20,
-#             with_payload=True
-#         )
-        
-#         poses = []
-#         for point in search_result[0]:
-#             pose_data = point.payload
-#             poses.append({
-#                 "name": pose_data.get("name", ""),
-#                 "sanskrit_name": pose_data.get("sanskrit_name", ""),
-#                 "pose_type": pose_data.get("pose_type", []),
-#                 "photo_url": pose_data.get("photo_url", "")
-#             })
-        
-#         return json.dumps({
-#             "expertise_level": level,
-#             "total_poses": len(poses), 
-#             "poses": poses
-#         }, indent=2)
-        
-#     except Exception as e:
-#         return json.dumps({"error": f"Failed to get poses: {str(e)}"})
-
-
-
-
-
-# Update the sequence templates to use actual pose names from the database
-SEQUENCE_TEMPLATES = {
-    "hatha": {
-        "beginner": {
-            "warm_up": ["Easy Pose", "Cat-Cow Pose", "Child's Pose"],
-            "standing": ["Mountain Pose", "Tree Pose", "Triangle Pose", "Warrior I"],
-            "seated": ["Staff Pose", "Bound Angle Pose", "Seated Forward Fold"],
-            "backbends": ["Bridge Pose", "Camel Pose"],
-            "cool_down": ["Child's Pose", "Supine Twist", "Corpse Pose"]
-        },
-        "intermediate": {
-            "warm_up": ["Cat-Cow Pose", "Downward-Facing Dog", "Sun Salutation A"],
-            "standing": ["Warrior I", "Warrior II", "Triangle Pose", "Extended Side Angle"],
-            "seated": ["Boat Pose", "Seated Forward Fold", "Seated Spinal Twist"],
-            "backbends": ["Camel Pose", "Wheel Pose", "Fish Pose"],
-            "cool_down": ["Pigeon Pose", "Supine Figure 4", "Corpse Pose"]
-        }
-    },
-    "vinyasa": {
-        "beginner": {
-            "warm_up": ["Easy Pose", "Sun Salutation A"],
-            "flow": ["Warrior I", "High Lunge", "Triangle Pose"],
-            "peak": ["Crow Pose", "Headstand Preparation"],
-            "cool_down": ["Pigeon Pose", "Happy Baby Pose", "Corpse Pose"]
-        },
-        "intermediate": {
-            "warm_up": ["Sun Salutation A", "Sun Salutation B"],
-            "flow": ["Warrior III", "Side Plank", "Eagle Pose"],
-            "peak": ["Crow Pose", "Forearm Stand", "King Pigeon Pose"],
-            "cool_down": ["Double Pigeon", "Supine Twist", "Corpse Pose"]
-        }
-    },
-    "stress_relief": {
-        "all_levels": {
-            "grounding": ["Child's Pose", "Easy Pose"],
-            "gentle": ["Cat-Cow Pose", "Gentle Twist", "Legs-Up-the-Wall Pose"],
-            "restorative": ["Supported Forward Fold", "Reclined Bound Angle", "Heart Opener"],
-            "relaxation": ["Body Scan", "Yoga Nidra", "Extended Corpse Pose"]
-        }
-    }
-}
 
 
 @mcp.prompt(
@@ -345,7 +353,14 @@ def generate_class_theme(
     season: str = Field(description="Current season or time of year", default="spring"),
     intention: str = Field(description="Desired class intention or focus", default="balance")
 ) -> str:
-    """Generate an inspiring class theme"""
+    """Generate an inspiring class theme with seasonal elements.
+
+    Args:
+        style: Yoga style to theme the class around
+        duration: Class duration for appropriate pacing
+        season: Current season for seasonal theming
+        intention: Desired focus or intention for the class
+    """
     
     themes = {
         "hatha": [
@@ -397,9 +412,13 @@ def generate_class_theme(
 """
 
 
-# Helper functions
 def calculate_time_allocation(duration_minutes: int, style: str) -> Dict[str, int]:
-    """Calculate time allocation for different sequence sections"""
+    """Calculate time allocation for different sequence sections.
+
+    Args:
+        duration_minutes: Total class duration
+        style: Yoga style to determine section timing
+    """
     
     if style == "stress_relief":
         return {
@@ -426,9 +445,12 @@ def calculate_time_allocation(duration_minutes: int, style: str) -> Dict[str, in
 
 
 def select_poses_for_time(poses: List[str], time_minutes: int) -> List[str]:
-    """Select appropriate number of poses for given time"""
-    
-    # Roughly 1-2 minutes per pose depending on style
+    """Select appropriate number of poses for given time allocation.
+
+    Args:
+        poses: List of available poses for the section
+        time_minutes: Time allocated for this section
+    """
     target_poses = max(1, min(time_minutes // 1.5, len(poses)))
     return poses[:int(target_poses)]
 
