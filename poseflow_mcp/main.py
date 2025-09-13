@@ -1,5 +1,5 @@
 """
-soloscale_poseflow — MCP Server (template style)
+soloscale_poseflow — MCP Server (template style) with /pose proxy
 """
 
 from __future__ import annotations
@@ -9,6 +9,12 @@ from typing import Optional, Dict, Any
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
+
+# ---- NEW: proxy & child-process imports ----
+import asyncio
+import subprocess
+from fastapi import Request, Response
+import httpx
 
 # ---------- helper imports (with safe fallbacks) ----------
 try:
@@ -24,9 +30,95 @@ except Exception:
 PORT = int(os.environ.get("PORT", "3000"))
 mcp = FastMCP("soloscale_poseflow", port=PORT, stateless_http=True, debug=True)
 
-# Pose backend (set POSEFLOW_BACKEND_URL in env for Alpic)
-POSE_API = os.environ.get("POSEFLOW_BACKEND_URL", "http://localhost:4000")
+# Get the underlying FastAPI app (so we can add routes / lifecycle hooks)
+app = mcp.streamable_http_app()
 
+# ---------- Backend selection ----------
+# If POSEFLOW_BACKEND_URL is set, we call that URL directly (no child / no proxy).
+# Otherwise, we spawn the Node backend locally on 4000 and proxy /pose/* to it.
+REMOTE_BACKEND = os.environ.get("POSEFLOW_BACKEND_URL")
+NODE_PORT = int(os.environ.get("BACKEND_PORT", "4000"))
+NODE_DIR = os.path.join(os.path.dirname(__file__), "src", "poseflow_backend")
+NODE_CMD = ["node", "dist/server.js"]  # assumes you've built TS -> dist
+
+# Where record_pose will send requests:
+if REMOTE_BACKEND:
+    POSE_API = REMOTE_BACKEND.rstrip("/")
+else:
+    # Default to calling the SAME MCP app (port 3000), which will proxy /pose/* → 4000
+    POSE_API = f"http://127.0.0.1:{PORT}"
+
+node_proc: subprocess.Popen | None = None
+
+# ---------- Only spawn+proxy if NO remote backend ----------
+if not REMOTE_BACKEND:
+    @app.on_event("startup")
+    async def _start_node():
+        """Spawn Node backend but don't block MCP readiness."""
+        global node_proc
+        try:
+            env = os.environ.copy()
+            env["PORT"] = str(NODE_PORT)
+            node_proc = subprocess.Popen(
+                NODE_CMD,
+                cwd=NODE_DIR,
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+            )
+            print(f"[poseflow] spawned node backend on :{NODE_PORT}")
+        except Exception as e:
+            print(f"[poseflow] WARN failed to start Node backend: {e}")
+
+        # best-effort warm check in the background (does NOT block MCP)
+        async def _wait_health():
+            for _ in range(50):
+                try:
+                    async with httpx.AsyncClient() as client:
+                        r = await client.get(f"http://127.0.0.1:{NODE_PORT}/health", timeout=0.5)
+                        if r.status_code == 200:
+                            print("[poseflow] node backend healthy")
+                            return
+                except Exception:
+                    pass
+                await asyncio.sleep(0.2)
+            print("[poseflow] WARN node backend did not report healthy in time")
+
+        asyncio.create_task(_wait_health())
+
+    @app.on_event("shutdown")
+    def _stop_node():
+        global node_proc
+        if node_proc and node_proc.poll() is None:
+            try:
+                node_proc.terminate()
+                print("[poseflow] node backend terminated")
+            except Exception:
+                pass
+
+    # Proxy any /pose/* calls to the node backend on 4000
+    @app.api_route("/pose/{rest:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
+    async def proxy_pose(rest: str, request: Request):
+        target = f"http://127.0.0.1:{NODE_PORT}/pose/{rest}"
+        body = await request.body()
+        headers = dict(request.headers)
+        headers.pop("host", None)
+
+        async with httpx.AsyncClient() as client:
+            resp = await client.request(
+                method=request.method,
+                url=target,
+                content=body if body else None,
+                headers=headers,
+                timeout=30.0,
+            )
+        return Response(
+            content=resp.content,
+            status_code=resp.status_code,
+            headers={"content-type": resp.headers.get("content-type", "application/json")},
+        )
+
+# Pose backend base (either remote URL or the MCP itself for proxy)
 STATE = {"threshold": 0.8}
 
 # ---------------- internal helpers ----------------

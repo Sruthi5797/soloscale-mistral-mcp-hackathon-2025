@@ -1,10 +1,9 @@
 #!/bin/bash
 set -e
-
-echo "📦 Installing Python dependencies..."
+echo "Python deps"
 uv sync --frozen
-
-echo "📦 Installing Node.js dependencies..."
-cd src/poseflow_backend
-npm install
-cd ../..
+echo "Node deps + build"
+pushd src/poseflow_backend
+npm ci || npm install
+npm run build
+popd
