@@ -7,6 +7,7 @@ import os
 from typing import Optional, Dict, Any
 
 from mcp.server.fastmcp import FastMCP
+from typing import Optional, Dict, Any
 from pydantic import Field
 
 # ---------- helper imports (with safe fallbacks) ----------
@@ -41,61 +42,105 @@ mcp = FastMCP("soloscale_poseflow", port=PORT, stateless_http=True, debug=True)
 
 STATE = {"threshold": 0.8}
 
-# ---------- TOOLS ----------
-@mcp.tool(title="Set Threshold", description="Set success threshold for celebration")
+# 1) Set threshold ------------------------------------------------------
+@mcp.tool(title="Set Threshold", description="Set success threshold for pose achievement (0.0–1.0).")
 def set_threshold(value: float = Field(description="0.0–1.0 threshold")) -> Dict[str, float]:
     v = max(0.0, min(1.0, float(value)))
     STATE["threshold"] = v
     return {"threshold": v}
 
-@mcp.tool(title="Record Pose", description="Predict pose from image URL or base64")
+
+# 2) Record + Feedback (pose + celebrate/adjust in one) -----------------
+@mcp.tool(
+    title="Record Pose",
+    description="Predict pose from image URL or base64 and return feedback based on the threshold."
+)
 def record_pose(
     image_url: Optional[str] = Field(default=None, description="Public image URL"),
-    image_b64: Optional[str] = Field(default=None, description="Base64 image data"),
-) -> Dict[str, object]:
+    image_b64: Optional[str] = Field(default=None, description="Base64-encoded image"),
+    threshold: Optional[float] = Field(default=None, description="Override threshold (0.0–1.0)."),
+) -> Dict[str, Any]:
+    if not (image_url or image_b64):
+        return {"error": "Provide either image_url or image_b64"}
+
     pose, conf = predict_pose(image_url=image_url, image_b64=image_b64)
-    return {"pose": pose, "confidence": round(float(conf), 3)}
 
-@mcp.tool(title="Celebrate", description="Return celebration if confidence ≥ threshold")
-def celebrate_if_correct(
-    pose: str = Field(description="Pose name"),
-    confidence: float = Field(description="Model confidence 0–1"),
-    threshold: Optional[float] = Field(default=None, description="Override threshold"),
-) -> str:
     th = float(threshold) if threshold is not None else float(STATE["threshold"])
-    return "🎉 Bravo! Pose achieved." if float(confidence) >= th else "Keep adjusting—you’re close!"
+    msg = "Bravo! Pose achieved." if float(conf) >= th else "Keep adjusting—you’re close!"
 
-@mcp.tool(title="Ask Send Teacher", description="Ask if result should be sent to teacher")
-def ask_send_teacher(
+    return {
+        "pose": pose,
+        "confidence": round(float(conf), 3),
+        "threshold_used": th,
+        "message": msg,
+    }
+
+
+# 3) Ask + Send to teacher (combined) -----------------------------------
+@mcp.tool(
+    title="Notify Teacher",
+    description=(
+        "Ask to send (preview) or send the result to a teacher via email/Slack. "
+        "Use confirm=false to get the confirmation prompt; set confirm=true to actually send."
+    ),
+)
+async def notify_teacher(
     pose: str = Field(description="Pose name"),
     student_id: str = Field(description="Student identifier"),
-) -> str:
-    return f"Do you want me to send your {pose} result for student {student_id} to your Yoga teacher?"
-
-@mcp.tool(title="Send To Teacher", description="Send success message via email and/or Slack")
-async def send_to_teacher(
-    pose: str = Field(description="Pose name"),
-    student_id: str = Field(description="Student identifier"),
-    teacher_email: Optional[str] = Field(default=None, description="Email address"),
+    teacher_email: Optional[str] = Field(default=None, description="Teacher email address"),
     slack_webhook: Optional[str] = Field(default=None, description="Slack webhook URL"),
-) -> Dict[str, object]:
-    text = f"Student {student_id} completed {pose} successfully. 🙌"
-    status: Dict[str, object] = {}
+    confirm: bool = Field(default=False, description="If true, perform sending; if false, return confirmation prompt."),
+) -> Dict[str, Any]:
+    # Validate at least one destination when attempting to send
+    destinations = {"teacher_email": teacher_email, "slack_webhook": slack_webhook}
+    has_destination = any(destinations.values())
+
+    preview_text = f"Student {student_id} completed {pose} successfully."
+
+    if not confirm:
+        # Return a confirmation prompt (no side effects)
+        return {
+            "action": "preview",
+            "message": (
+                "Do you want me to send this result to your Yoga teacher?"
+                if has_destination
+                else "No destination provided. Add teacher_email and/or slack_webhook to send."
+            ),
+            "payload": {
+                "pose": pose,
+                "student_id": student_id,
+                "teacher_email": teacher_email,
+                "slack_webhook": slack_webhook,
+                "text": preview_text,
+                "confirm": True,
+            },
+        }
+
+    # confirm=True -> perform the send
+    if not has_destination:
+        return {"error": "No destination configured. Provide teacher_email and/or slack_webhook."}
+
+    status: Dict[str, Any] = {"sent": {}}
     if teacher_email:
-        status["email"] = send_email(subject=f"{student_id} - {pose} achieved", body=text, to_email=teacher_email)
+        status["sent"]["email"] = send_email(
+            subject=f"{student_id} - {pose} achieved",
+            body=preview_text,
+            to_email=teacher_email,
+        )
     if slack_webhook:
-        status["slack"] = await send_slack(slack_webhook, text)
-    if not status:
-        status["info"] = "No destination configured"
+        status["sent"]["slack"] = await send_slack(slack_webhook, preview_text)
+
     status["ok"] = True
     return status
 
-@mcp.tool(title="Next Or End", description="Choose next pose or end session")
+
+# 4) Next or End ---------------------------------------------------------
+@mcp.tool(title="Next Or End", description="Choose next pose or end session.")
 def session_next_or_end(
-    choice: str = Field(default="next", description="next | end"),
+    choice: str = Field(default="next", description="Accepts 'next' or 'end'."),
 ) -> str:
     return "Okay—loading the next pose. 🧘" if choice.lower().startswith("n") \
-           else "Great session today. That’s it for now. 🌿"
+           else "Great session today. That’s it for now."
 
 # ---------- Run (template style) ----------
 if __name__ == "__main__":
