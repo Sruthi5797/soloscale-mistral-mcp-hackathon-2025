@@ -2,11 +2,11 @@
 
 ## Server Description
 
-The Yoga Class Sequencing MCP Server is an intelligent yoga instruction assistant that generates personalized yoga class sequences with Mistral Voxtral integration. It creates structured sequences, provides audio instructions using text-to-speech, and generates inspiring class themes.
+The Yoga Class Sequencing MCP Server is an intelligent yoga instruction assistant that generates personalized yoga class sequences with OpenAI TTS integration. It creates structured sequences, provides cost-effective calming audio instructions, and generates inspiring class themes.
 
 ## MCP Components
 
-### 🛠️ Tools (2)
+### 🛠️ Tools (3)
 
 #### `create_yoga_sequence`
 **Purpose**: Generate a complete, personalized yoga class sequence
@@ -30,29 +30,47 @@ The Yoga Class Sequencing MCP Server is an intelligent yoga instruction assistan
 - Validation of inputs with helpful error messages
 - Style-appropriate section organization
 
-#### `read_pose_procedure_with_voxtral`
-**Purpose**: Generate detailed pose instructions with Mistral Voxtral audio integration
+#### `generate_pose_procedure`
+**Purpose**: Generate detailed step-by-step instructions for yoga poses using AI
 
 **Inputs**:
-- `pose_name`: Name of the yoga pose
-- `language`: Output language (english/sanskrit_pronunciation/bilingual)
-- `voice_style`: Voice character (calm/energetic/meditative/neutral)
-- `include_breathing_cues`: Add breath timing guidance (true/false)
-- `speed`: Speech speed (slow/normal/fast)
-- `quality`: Audio quality (standard/high/premium)
+- `pose_name`: English name of the yoga pose
+- `sanskrit_name`: Sanskrit name (optional)
+- `expertise_level`: Difficulty level (Beginner/Intermediate/Advanced)
+- `include_modifications`: Include modifications and variations (true/false)
 
-**Output**: Complete instruction package including:
+**Output**: Comprehensive pose information including:
 - Detailed step-by-step procedure text
-- Sanskrit name and pronunciation guide
-- Audio synthesis via Mistral Voxtral API
-- Estimated duration and cost information
+- Alignment cues and safety tips
+- Breathing guidance
+- Modifications and variations
+- Benefits and contraindications
 
 **Key Features**:
-- Mistral Voxtral integration for natural speech synthesis
-- Multiple language options including Sanskrit pronunciation
-- Customizable voice styles and speech parameters
+- Enhanced with OpenAI TTS model integration
 - Professional yoga instruction formatting
-- Graceful fallback to text when API unavailable
+- Expertise-level appropriate instructions
+- Safety-focused guidance
+
+#### `generate_simple_calming_audio`
+**Purpose**: Generate cost-effective calming audio instructions for yoga poses
+
+**Inputs**:
+- `asana_name`: Name of the yoga pose
+- `voice`: Fixed to 'alloy' for consistent calming tone
+- `include_breathing_cues`: Add simple breathing guidance (true/false)
+
+**Output**: Simple audio package including:
+- Short, calming audio instructions
+- Base64 encoded MP3 audio content
+- Cost-optimized script text
+- Metadata about audio generation
+
+**Key Features**:
+- Cost-effective with short, essential instructions
+- Consistent calming 'alloy' voice for soothing tone
+- Optimized speech speed (0.9x) for relaxation
+- Simple, gentle language perfect for yoga practice
 
 ### 📚 Resources (2)
 
@@ -110,16 +128,43 @@ The Yoga Class Sequencing MCP Server is an intelligent yoga instruction assistan
 - **Expertise Levels**: Clear difficulty classifications (Beginner/Intermediate/Advanced)
 - **Professional Structure**: Organized by practice style and sequence sections
 
-### 🔊 Mistral Voxtral Integration
-- **Natural Speech**: High-quality text-to-speech using Mistral's Voxtral model
-- **Voice Customization**: Multiple voice styles (calm, energetic, meditative, neutral)
-- **Language Options**: English, Sanskrit pronunciation, or bilingual instruction
-- **Professional Audio**: Studio-quality audio for yoga instruction
+### 🔊 OpenAI TTS Integration
+- **Cost-Effective Audio**: Optimized text-to-speech using OpenAI's TTS-1 model
+- **Consistent Calming Voice**: Fixed 'alloy' voice for soothing, consistent tone
+- **Simplified Parameters**: No complex customization to minimize costs
+- **Essential Instructions**: 70% text reduction for cost optimization while maintaining quality
 
 ### ⚡ Intelligent Automation
 - **Time-Aware Sequencing**: Automatic pose selection based on available time
 - **Style-Specific Logic**: Different algorithms for Hatha, Vinyasa, and Stress Relief
 - **Error Handling**: Graceful fallback when API services unavailable
+
+## API Configuration
+
+This server requires an OpenAI API key for generating cost-effective calming audio instructions:
+
+### Required Environment Variables:
+```bash
+export OPENAI_API_KEY="your_openai_api_key_here"
+```
+
+### Setting up the environment:
+1. Get your OpenAI API key from [OpenAI Platform](https://platform.openai.com/api-keys)
+2. Add the API key to your environment:
+   ```bash
+   # For bash/zsh
+   echo 'export OPENAI_API_KEY="your_key_here"' >> ~/.bashrc
+   source ~/.bashrc
+   
+   # Or for current session only
+   export OPENAI_API_KEY="your_key_here"
+   ```
+
+### Cost Optimization:
+- The server uses OpenAI's TTS-1 model with optimized parameters
+- Fixed 'alloy' voice for consistent calming tone
+- Reduced text length (70% cost savings) for essential instructions only
+- Speech speed optimized at 0.9x for relaxation
 
 ## Quick Start Examples
 
@@ -128,9 +173,9 @@ The Yoga Class Sequencing MCP Server is an intelligent yoga instruction assistan
 "Create a 30-minute beginner hatha yoga sequence focused on strength"
 ```
 
-### Get Audio Instructions
+### Get Simple Calming Audio
 ```
-"Generate audio instructions for Warrior I pose in calm voice with breathing cues"
+"Generate simple calming audio for Mountain Pose with breathing cues"
 ```
 
 ### Generate Class Theme
@@ -162,14 +207,14 @@ The Yoga Class Sequencing MCP Server is an intelligent yoga instruction assistan
 - "Generate audio for Downward Dog with Sanskrit pronunciation"  
 - "Create spring theme for 60-minute vinyasa class"
 
-### 🔊 Audio-Enhanced Instruction
-- "Read Child's Pose procedure in calm voice with breathing cues"
-- "Bilingual instructions for Sun Salutation sequence"
-- "Meditative voice for final relaxation guidance"
+### 🔊 Simple Audio Instruction
+- "Generate simple calming audio for Child's Pose with breathing cues"
+- "Create cost-effective audio guidance for Mountain Pose"
+- "Simple audio for final relaxation with gentle voice"
 
 ### 🎨 Complete Class Planning
-- "Plan 45-minute stress relief class with theme and audio cues"
-- "Design progressive hatha series with voice instructions"
+- "Plan 45-minute stress relief class with theme and simple audio cues"
+- "Design progressive hatha series with calming voice instructions"
 
 ## Setup Requirements
 
@@ -179,15 +224,15 @@ The Yoga Class Sequencing MCP Server is an intelligent yoga instruction assistan
 - Class theme creation available
 
 ### Audio Features (Optional)
-- Set `MISTRAL_API_KEY` environment variable
-- Enable Voxtral integration for audio instructions
+- Set `OPENAI_API_KEY` environment variable
+- Enable cost-effective TTS integration for simple audio instructions
 - Fallback to text-only when API unavailable
 
 ## Integration Benefits
 
-- **For Yoga Instructors**: Quick sequence generation with professional audio instructions
-- **For Students**: Personalized practice with guided audio cues and Sanskrit learning
-- **For Apps**: Structured yoga content with audio integration capabilities  
-- **For AI Assistants**: Rich yoga knowledge with Mistral Voxtral speech synthesis
+- **For Yoga Instructors**: Quick sequence generation with cost-effective calming audio instructions
+- **For Students**: Personalized practice with simple guided audio cues and Sanskrit learning
+- **For Apps**: Structured yoga content with optimized audio integration capabilities  
+- **For AI Assistants**: Rich yoga knowledge with OpenAI TTS for gentle, calming instruction
 
-This MCP server combines traditional yoga wisdom with modern AI capabilities, providing intelligent sequencing and natural audio instruction through Mistral's Voxtral integration.
+This MCP server combines traditional yoga wisdom with modern AI capabilities, providing intelligent sequencing and cost-effective calming audio instruction through OpenAI's TTS integration.

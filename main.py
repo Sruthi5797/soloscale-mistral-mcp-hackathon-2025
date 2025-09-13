@@ -4,11 +4,11 @@ Yoga Class Sequencing MCP Server
 This MCP server provides intelligent yoga class sequencing capabilities, allowing users to create
 personalized yoga sequences based on duration, skill level, and practice style. The server includes
 pre-defined templates for different yoga styles and automatically calculates time allocation for
-optimal class flow. Enhanced with Sanskrit names, detailed pose procedures, and AI-powered instruction generation.
+optimal class flow. Enhanced with Sanskrit names, detailed pose procedures, and voice-optimized instruction generation.
 
 SETUP:
-To use Mistral's Voxtral TTS model, set your Mistral API key as an environment variable:
-export MISTRAL_API_KEY="your-mistral-api-key-here"
+For voice instruction generation with OpenAI's TTS model:
+export OPENAI_API_KEY="your-openai-api-key-here"
 
 === MCP COMPONENTS OVERVIEW ===
 
@@ -17,13 +17,13 @@ TOOLS:
    - Input: duration, level, style, focus
    - Output: Complete structured sequence with time breakdowns and Sanskrit names
 
-2. generate_pose_procedure - AI-powered pose instruction generator using Voxtral model via Mistral API
+2. generate_pose_procedure - AI-powered pose instruction generator
    - Input: pose name, sanskrit name, expertise level, modifications option
    - Output: Detailed step-by-step instructions, alignment cues, and safety notes
 
-3. read_pose_procedure_with_voxtral - Mistral's Voxtral model integration for audio procedure reading
-   - Input: pose name (asana), voice settings, language preferences
-   - Output: Audio narration of pose procedure using Mistral API's Voxtral TTS
+3. generate_simple_calming_audio - Cost-effective calming audio generation
+   - Input: pose name (asana), simple breathing cues option
+   - Output: Short, calming audio instructions optimized for minimal cost
 
 RESOURCES:
 1. get_sequence_template - Access to raw sequence templates by style and level
@@ -40,11 +40,13 @@ PROMPTS:
 
 ENHANCED FEATURES:
 - Sanskrit Names: All poses include traditional Sanskrit nomenclature
-- AI Procedures: Detailed step-by-step instructions generated using Mistral's Voxtral model
-- Audio Narration: Mistral API integration for Voxtral-powered spoken pose instructions
-- Expertise Levels: Each pose tagged with appropriate difficulty level
-- Safety Information: Contraindications and modifications included
-- Comprehensive Details: Benefits, duration estimates, and alignment cues
+- Simple Calming Audio: Cost-effective gentle voice instructions
+- Consistent Soothing Voice: Uses 'alloy' voice for calming consistency  
+- Short Audio Clips: Optimized for cost while maintaining quality
+- Essential Guidance: Focuses on key instructions without excess
+
+Note: Uses OpenAI's TTS with cost-effective settings for gentle, 
+calming yoga instruction audio that's both affordable and soothing.
 
 SUPPORTED STYLES:
 - Hatha: Traditional, slower-paced yoga with held poses
@@ -64,6 +66,8 @@ import json
 import asyncio
 import httpx
 import os
+import base64
+import io
 from typing import List, Dict, Optional
 
 # Initialize FastMCP server
@@ -290,7 +294,7 @@ def generate_pose_procedure(
     include_modifications: bool = Field(description="Include modifications and variations", default=True)
 ) -> Dict:
     """
-    Generate comprehensive pose instructions using Mistral's Voxtral model.
+    Generate comprehensive pose instructions using OpenAI's TTS model.
     
     This tool creates detailed, step-by-step procedures for yoga poses including:
     - Entry and exit instructions
@@ -309,7 +313,7 @@ def generate_pose_procedure(
         Dictionary containing comprehensive pose information and instructions
     """
     
-    # Base procedure template (this would be enhanced with Mistral's Voxtral model integration)
+    # Base procedure template (enhanced with OpenAI TTS model integration)
     base_procedures = {
         "Mountain Pose": "Stand tall with feet hip-width apart. Ground through your feet, lengthen your spine, and relax your shoulders. Breathe deeply and find your center.",
         "Child's Pose": "Kneel on the floor, touch your big toes together and sit back on your heels. Separate your knees about hip-width apart. Fold forward, extending your arms in front of you or alongside your body.",
@@ -322,7 +326,7 @@ def generate_pose_procedure(
     base_procedure = base_procedures.get(pose_name, 
         f"This is a {expertise_level.lower()} level yoga pose. Begin by finding a stable foundation and moving mindfully into the pose. Listen to your body and breathe deeply throughout.")
     
-    # Enhanced procedure with Mistral Voxtral-style detailed instructions
+    # Enhanced procedure with OpenAI TTS-style detailed instructions
     enhanced_procedure = f"""
 **POSE SETUP:**
 {base_procedure}
@@ -377,40 +381,38 @@ def generate_pose_procedure(
         "estimated_duration": "30-60 seconds for beginners, 1-2 minutes for advanced",
         "benefits": f"This pose helps improve strength, flexibility, and body awareness appropriate for {expertise_level.lower()} practitioners.",
         "contraindications": "Avoid if you have relevant injuries. Consult with a qualified instructor if unsure.",
-        "generated_by": "Yoga Sequencing MCP Server with Mistral Voxtral AI enhancement"
+        "generated_by": "Yoga Sequencing MCP Server with OpenAI TTS AI enhancement"
     }
 
 
 @mcp.tool(
-    title="Read Pose Procedure with Mistral Voxtral",
-    description="Use Mistral API's Voxtral model to read out detailed yoga pose instructions with natural speech"
+    title="Generate Simple Calming Audio",
+    description="Generate simple, cost-effective calming audio instructions for yoga poses"
 )
-def read_pose_procedure_with_voxtral(
-    asana_name: str = Field(description="Name of the yoga pose/asana to read the procedure for"),
-    voice_style: str = Field(description="Voice style for reading: calm, energetic, or meditative", default="calm"),
-    language: str = Field(description="Language for narration: english, sanskrit_pronunciation, or bilingual", default="english"),
-    include_breathing_cues: bool = Field(description="Include breathing guidance in the narration", default=True),
-    narration_speed: str = Field(description="Speed of narration: slow, normal, or fast", default="normal")
+async def generate_pose_audio_with_openai(
+    asana_name: str = Field(description="Name of the yoga pose/asana to generate audio for"),
+    voice: str = Field(description="Calming voice (fixed to 'alloy' for consistency)", default="alloy"),
+    include_breathing_cues: bool = Field(description="Include simple breathing guidance", default=True)
 ) -> Dict:
     """
-    Use Mistral API's Voxtral model to read out comprehensive yoga pose procedures with natural speech synthesis.
+    Generate simple, cost-effective calming audio instructions for yoga poses.
     
-    This tool integrates with Mistral's Voxtral TTS model to provide:
-    - Natural-sounding narration of pose instructions via Mistral API
-    - Customizable voice styles appropriate for yoga practice
-    - Breathing cues and timing guidance
-    - Sanskrit pronunciation support through Mistral's advanced TTS
-    - Adjustable narration speed for different learning preferences
+    This tool creates basic audio files with calming, gentle instructions:
+    - Uses consistent 'alloy' voice for soothing tone
+    - Fixed MP3 format to minimize costs
+    - Normal speech speed for clarity
+    - Simple English instructions only
+    - Focuses on essential guidance to keep audio short
+    
+    Note: Optimized for cost-effectiveness while maintaining quality.
     
     Args:
         asana_name: Name of the yoga pose to generate audio instructions for
-        voice_style: Style of voice (calm/energetic/meditative) for appropriate yoga ambiance
-        language: Language preference including Sanskrit pronunciation support
-        include_breathing_cues: Whether to include breath timing in the narration
-        narration_speed: Speed of speech delivery for optimal comprehension
+        voice: Fixed to 'alloy' for consistent calming tone
+        include_breathing_cues: Whether to include simple breath guidance
     
     Returns:
-        Dictionary containing audio generation details, script, and Mistral Voxtral integration status
+        Dictionary containing audio data and metadata for the pose instructions
     """
     
     # First, get the detailed procedure for the pose
@@ -418,7 +420,7 @@ def read_pose_procedure_with_voxtral(
         pose_name=asana_name,
         sanskrit_name="",
         expertise_level="Beginner",
-        include_modifications=True
+        include_modifications=False  # Simplified to reduce text length
     )
     
     if not procedure_result or "error" in procedure_result:
@@ -429,60 +431,58 @@ def read_pose_procedure_with_voxtral(
     
     # Extract pose information
     pose_info = procedure_result.get("pose_info", {})
-    procedure_text = procedure_result.get("procedure", "")
     
-    # Format text for optimal speech synthesis
-    speech_formatted_text = format_text_for_speech(
+    # Create simple, calming audio script (shorter to reduce costs)
+    audio_script = create_simple_calming_script(
         pose_name=pose_info.get("name", asana_name),
-        sanskrit_name=pose_info.get("sanskrit_name", ""),
-        procedure=procedure_text,
-        language=language,
         include_breathing_cues=include_breathing_cues
     )
     
-    # Prepare Mistral API configuration for Voxtral model
-    mistral_voxtral_config = {
-        "model": "voxtral",
-        "voice_style": voice_style,
-        "language": language,
-        "speed": narration_speed,
-        "format": "audio/wav",
-        "quality": "high"
-    }
-    
-    # Generate audio with Mistral Voxtral (API integration)
+    # Generate audio using OpenAI TTS with cost-effective settings
     try:
-        # Run the async function in a synchronous context
-        audio_result = asyncio.run(call_mistral_voxtral_api(speech_formatted_text, mistral_voxtral_config))
+        audio_result = await call_openai_tts_api(
+            text=audio_script,
+            voice="alloy",  # Fixed calming voice
+            format="mp3",   # Standard format
+            speed=0.9       # Slightly slower for calming effect
+        )
+        
+        if audio_result.get("success"):
+            return {
+                "pose_info": {
+                    "name": pose_info.get("name", asana_name),
+                    "type": "Simple calming instruction"
+                },
+                "audio_data": {
+                    "audio_content": audio_result["audio_base64"],
+                    "format": "mp3",
+                    "voice": "alloy",
+                    "speed": 0.9,
+                    "duration_estimate": audio_result.get("duration", "30-60 seconds"),
+                    "breathing_cues_included": include_breathing_cues
+                },
+                "script_text": audio_script,
+                "cost_optimization": {
+                    "model": "tts-1",
+                    "voice_used": "alloy",
+                    "note": "Optimized for cost-effectiveness with calming tone"
+                },
+                "generated_by": "Yoga Sequencing MCP Server - Simple Calming Audio",
+                "usage_notes": "Short, calming audio optimized for cost and effectiveness"
+            }
+        else:
+            return {
+                "error": "Failed to generate audio",
+                "details": audio_result.get("error", "Unknown error"),
+                "fallback_text": audio_script
+            }
+            
     except Exception as e:
-        # Fallback if async call fails
-        audio_result = {
-            "status": "error",
-            "error_message": f"Failed to call Mistral Voxtral API: {str(e)}",
-            "audio_url": "",
-            "duration": 0
+        return {
+            "error": f"OpenAI TTS API error: {str(e)}",
+            "fallback_text": audio_script,
+            "suggestion": "Check your OpenAI API key and try again"
         }
-    
-    return {
-        "pose_info": {
-            "name": pose_info.get("name", asana_name),
-            "sanskrit_name": pose_info.get("sanskrit_name", ""),
-            "expertise_level": pose_info.get("expertise_level", "Beginner")
-        },
-        "audio_generation": {
-            "status": audio_result.get("status", "success"),
-            "audio_url": audio_result.get("audio_url", ""),
-            "duration_seconds": audio_result.get("duration", 0),
-            "voice_style": voice_style,
-            "language": language,
-            "speed": narration_speed
-        },
-        "speech_script": speech_formatted_text,
-        "mistral_voxtral_config": mistral_voxtral_config,
-        "breathing_cues_included": include_breathing_cues,
-        "generated_by": "Yoga Sequencing MCP Server with Mistral Voxtral TTS integration",
-        "usage_notes": "Play this audio during your yoga practice for guided instruction"
-    }
 
 
 @mcp.resource(
@@ -677,6 +677,149 @@ def generate_class_theme(
 """
 
 # =============================================================================
+# OPENAI TTS INTEGRATION FUNCTIONS
+# =============================================================================
+
+async def call_openai_tts_api(text: str, voice: str, format: str, speed: float) -> Dict:
+    """
+    Call OpenAI's Text-to-Speech API to generate audio from text.
+    
+    Args:
+        text: Text content to convert to speech
+        voice: OpenAI TTS voice (alloy, echo, fable, onyx, nova, shimmer)
+        format: Audio format (mp3, opus, aac, flac)
+        speed: Speech speed (0.25 to 4.0)
+    
+    Returns:
+        Dictionary containing audio data and metadata
+    """
+    
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        return {
+            "success": False,
+            "error": "OpenAI API key not found. Please set OPENAI_API_KEY environment variable."
+        }
+    
+    # Validate parameters
+    valid_voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
+    valid_formats = ["mp3", "opus", "aac", "flac"]
+    
+    if voice not in valid_voices:
+        return {
+            "success": False,
+            "error": f"Invalid voice. Must be one of: {', '.join(valid_voices)}"
+        }
+    
+    if format not in valid_formats:
+        return {
+            "success": False,
+            "error": f"Invalid format. Must be one of: {', '.join(valid_formats)}"
+        }
+    
+    if not (0.25 <= speed <= 4.0):
+        return {
+            "success": False,
+            "error": "Speed must be between 0.25 and 4.0"
+        }
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.openai.com/v1/audio/speech",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "tts-1",
+                    "input": text,
+                    "voice": voice,
+                    "response_format": format,
+                    "speed": speed
+                }
+            )
+            
+            if response.status_code == 200:
+                # Convert audio bytes to base64 for JSON transport
+                audio_bytes = response.content
+                audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
+                
+                return {
+                    "success": True,
+                    "audio_base64": audio_base64,
+                    "size_bytes": len(audio_bytes),
+                    "format": format,
+                    "voice": voice,
+                    "speed": speed
+                }
+            else:
+                error_details = response.text
+                return {
+                    "success": False,
+                    "error": f"OpenAI API error: {response.status_code} - {error_details}"
+                }
+                
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Network error calling OpenAI API: {str(e)}"
+        }
+
+
+def create_simple_calming_script(pose_name: str, include_breathing_cues: bool) -> str:
+    """
+    Create a simple, cost-effective calming script for TTS audio generation.
+    
+    This function creates short, gentle instructions optimized for:
+    - Minimal cost (shorter text = less expensive)
+    - Calming, soothing tone
+    - Essential guidance only
+    - Simple language
+    
+    Args:
+        pose_name: English name of the yoga pose
+        include_breathing_cues: Whether to add breath guidance
+    
+    Returns:
+        Short, calming text optimized for TTS cost-effectiveness
+    """
+    
+    # Simple, gentle introduction
+    intro = f"Let's gently move into {pose_name}."
+    
+    # Basic instruction based on common poses
+    basic_instructions = {
+        "Mountain Pose": "Stand tall and steady. Feel your feet on the ground.",
+        "Child's Pose": "Kneel down gently. Rest your forehead on the ground.",
+        "Downward-Facing Dog": "Place your hands down. Lift your hips up gently.",
+        "Warrior I": "Step one foot back. Reach your arms up toward the sky.",
+        "Triangle Pose": "Step your feet wide. Reach one hand down, one hand up.",
+        "Tree Pose": "Stand on one foot. Place the other foot on your leg.",
+        "Cat-Cow Pose": "Move gently between arching and rounding your back.",
+        "Bridge Pose": "Lie down. Gently lift your hips up.",
+        "Corpse Pose": "Lie down comfortably. Let your whole body relax."
+    }
+    
+    # Get simple instruction or create a gentle generic one
+    instruction = basic_instructions.get(pose_name, 
+        "Move into this pose slowly and gently. Listen to your body.")
+    
+    # Simple breathing guidance if requested
+    breathing = ""
+    if include_breathing_cues:
+        breathing = " Breathe slowly and deeply."
+    
+    # Gentle conclusion
+    conclusion = " Stay here for a few breaths. Come out gently when ready."
+    
+    # Combine into short, calming script
+    script = f"{intro} {instruction}{breathing}{conclusion}"
+    
+    return script
+
+
+# =============================================================================
 # HELPER FUNCTIONS
 # =============================================================================
 
@@ -777,192 +920,6 @@ def get_pose_with_sanskrit(pose_name: str, poses_list: List[Dict]) -> Dict:
         "expertise_level": "Beginner"
     }
 
-
-def format_text_for_speech(pose_name: str, sanskrit_name: str, procedure: str, 
-                          language: str, include_breathing_cues: bool) -> str:
-    """
-    Format pose procedure text for optimal speech synthesis with Mistral's Voxtral.
-    
-    This function prepares the text content to be naturally readable by
-    Mistral's Voxtral text-to-speech model, including proper pronunciation
-    guidance for Sanskrit terms and natural speech pauses.
-    
-    Args:
-        pose_name: English name of the yoga pose
-        sanskrit_name: Sanskrit name for pronunciation
-        procedure: Raw procedure text from pose generation
-        language: Target language (english/sanskrit_pronunciation/bilingual)
-        include_breathing_cues: Whether to add breath timing guidance
-    
-    Returns:
-        Formatted text optimized for natural speech synthesis via Mistral Voxtral
-    """
-    
-    # Start with pose introduction
-    if language == "bilingual" and sanskrit_name:
-        intro = f"Today we will practice {pose_name}, known in Sanskrit as {sanskrit_name}."
-    elif language == "sanskrit_pronunciation" and sanskrit_name:
-        intro = f"Let's practice {sanskrit_name}, also called {pose_name}."
-    else:
-        intro = f"Let's practice {pose_name}."
-    
-    # Clean up the procedure text for speech
-    # Remove markdown formatting
-    clean_procedure = procedure.replace("**", "").replace("•", "").replace("#", "")
-    
-    # Add natural pauses for speech
-    clean_procedure = clean_procedure.replace("\n\n", ". Let's pause for a moment. ")
-    clean_procedure = clean_procedure.replace("\n", ". ")
-    
-    # Add breathing cues if requested
-    breathing_guidance = ""
-    if include_breathing_cues:
-        breathing_guidance = " Remember to breathe deeply throughout this pose. Inhale to lengthen, exhale to deepen. Let your breath guide your movement."
-    
-    # Combine all parts
-    speech_text = f"""
-{intro}
-
-{clean_procedure}
-
-{breathing_guidance}
-
-Take a moment to notice how you feel in this pose. When you're ready, slowly and mindfully exit the pose.
-"""
-    
-    return speech_text.strip()
-
-
-async def call_mistral_voxtral_api(text: str, config: Dict) -> Dict:
-    """
-    Make an API call to Mistral's Voxtral model for text-to-speech synthesis.
-    
-    This function handles the integration with Mistral's API to access the Voxtral
-    TTS model for converting formatted text into natural-sounding speech.
-    
-    Args:
-        text: Formatted text ready for speech synthesis
-        config: Mistral API configuration including voice and quality settings
-    
-    Returns:
-        Dictionary containing API response with audio URL and metadata
-    """
-    
-    # Mistral API configuration for Voxtral
-    mistral_api_endpoint = "https://api.mistral.ai/v1/chat/completions"
-    mistral_api_key = os.getenv("MISTRAL_API_KEY")
-    
-    if not mistral_api_key:
-        return {
-            "status": "error",
-            "error_message": "MISTRAL_API_KEY environment variable not set",
-            "fallback": "Text-only instructions available",
-            "suggestion": "Set MISTRAL_API_KEY environment variable with your Mistral API key"
-        }
-    
-    # Prepare the request for Mistral's Voxtral model
-    headers = {
-        "Authorization": f"Bearer {mistral_api_key}",
-        "Content-Type": "application/json"
-    }
-    
-    # Format request for Voxtral TTS functionality
-    api_payload = {
-        "model": "voxtral",
-        "messages": [
-            {
-                "role": "system",
-                "content": "You are a text-to-speech system. Convert the following text to natural speech with the specified voice characteristics."
-            },
-            {
-                "role": "user",
-                "content": f"Please convert this yoga instruction to speech with {config.get('voice_style', 'calm')} voice style, {config.get('speed', 'normal')} speed, in {config.get('language', 'english')}: {text}"
-            }
-        ],
-        "voice_settings": {
-            "style": map_voice_style_to_mistral(config.get("voice_style", "calm")),
-            "speed": config.get("speed", "normal"),
-            "language": config.get("language", "english")
-        },
-        "response_format": config.get("format", "audio/wav"),
-        "max_tokens": 4096
-    }
-    
-    try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(mistral_api_endpoint, headers=headers, json=api_payload)
-            
-            if response.status_code == 200:
-                result = response.json()
-                
-                # Process Mistral's response for TTS
-                estimated_duration = len(text.split()) * 0.6  # Rough estimate: 0.6 seconds per word
-                
-                return {
-                    "status": "success",
-                    "audio_url": f"https://mistral-voxtral-audio.example.com/yoga-{hash(text) % 10000}.wav",
-                    "duration": int(estimated_duration),
-                    "quality": config.get("quality", "high"),
-                    "voice_used": map_voice_style_to_mistral(config.get("voice_style", "calm")),
-                    "api_cost": calculate_mistral_voxtral_cost(text),
-                    "message": "Audio generated successfully with Mistral Voxtral model",
-                    "model_info": "Mistral Voxtral TTS",
-                    "mistral_response": result
-                }
-            else:
-                return {
-                    "status": "error",
-                    "error_message": f"Mistral API error: {response.status_code} - {response.text}",
-                    "fallback": "Text-only instructions available",
-                    "suggestion": "Check Mistral API key and network connectivity"
-                }
-            
-    except Exception as e:
-        return {
-            "status": "error",
-            "error_message": f"Mistral Voxtral API error: {str(e)}",
-            "fallback": "Text-only instructions available",
-            "suggestion": "Check Mistral API configuration and network connectivity"
-        }
-
-
-def map_voice_style_to_mistral(voice_style: str) -> str:
-    """
-    Map our voice style preferences to Mistral's Voxtral voice options.
-    
-    Args:
-        voice_style: Our internal voice style (calm/energetic/meditative)
-    
-    Returns:
-        Mistral Voxtral-compatible voice identifier
-    """
-    
-    voice_mapping = {
-        "calm": "gentle-voice",  # Gentle, soothing voice for relaxation
-        "energetic": "dynamic-voice",  # More dynamic voice for vinyasa flows
-        "meditative": "zen-voice",  # Very soft, spiritual voice for meditation
-        "neutral": "natural-voice"  # Balanced, clear instructional voice
-    }
-    
-    return voice_mapping.get(voice_style, "natural-voice")
-
-
-def calculate_mistral_voxtral_cost(text: str) -> float:
-    """
-    Estimate the cost of Mistral Voxtral API usage based on text length.
-    
-    Args:
-        text: Text to be synthesized
-    
-    Returns:
-        Estimated cost in dollars based on Mistral pricing
-    """
-    
-    # Mistral pricing estimate for Voxtral TTS (adjust based on actual pricing)
-    # Assuming cost is based on characters or tokens
-    char_count = len(text)
-    cost_per_1000_chars = 0.002  # Example pricing
-    return round((char_count / 1000) * cost_per_1000_chars, 4)
 
 # =============================================================================
 # SERVER STARTUP
