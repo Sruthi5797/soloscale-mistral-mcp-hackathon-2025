@@ -7,8 +7,8 @@ pre-defined templates for different yoga styles and automatically calculates tim
 optimal class flow. Enhanced with Sanskrit names, detailed pose procedures, and voice-optimized instruction generation.
 
 SETUP:
-For voice instruction generation with OpenAI's TTS model:
-export OPENAI_API_KEY="your-openai-api-key-here"
+For voice instruction generation with Piper TTS (offline, cost-free):
+# No API key needed - runs completely offline
 
 === MCP COMPONENTS OVERVIEW ===
 
@@ -21,9 +21,9 @@ TOOLS:
    - Input: pose name, sanskrit name, expertise level, modifications option
    - Output: Detailed step-by-step instructions, alignment cues, and safety notes
 
-3. generate_pose_audio_with_openai - Cost-effective calming audio generation
+3. generate_pose_audio_with_piper - Free offline calming audio generation
    - Input: pose name (asana), simple breathing cues option
-   - Output: Short, calming audio instructions optimized for minimal cost
+   - Output: Short, calming audio instructions generated locally
 
 RESOURCES:
 1. get_sequence_template - Access to raw sequence templates by style and level
@@ -40,13 +40,13 @@ PROMPTS:
 
 ENHANCED FEATURES:
 - Sanskrit Names: All poses include traditional Sanskrit nomenclature
-- Simple Calming Audio: Cost-effective gentle voice instructions
-- Consistent Soothing Voice: Uses 'alloy' voice for calming consistency  
-- Short Audio Clips: Optimized for cost while maintaining quality
-- Essential Guidance: Focuses on key instructions without excess
+- Free Offline Audio: Cost-free gentle voice instructions using Piper TTS
+- Consistent Calming Voice: Uses offline female voice for soothing consistency  
+- Quick Local Generation: Optimized for fast local audio synthesis
+- No API Costs: Completely offline operation with no external dependencies
 
-Note: Uses OpenAI's TTS with cost-effective settings for gentle, 
-calming yoga instruction audio that's both affordable and soothing.
+Note: Uses Piper TTS for free, offline text-to-speech generation with 
+calming yoga instruction audio that's completely cost-free and private.
 
 SUPPORTED STYLES:
 - Hatha: Traditional, slower-paced yoga with held poses
@@ -64,7 +64,8 @@ from fastmcp import FastMCP
 from pydantic import Field
 import json
 import asyncio
-import httpx
+import subprocess
+import tempfile
 import os
 import base64
 import io
@@ -386,33 +387,50 @@ def generate_pose_procedure(
 
 
 @mcp.tool(
-    title="Generate Pose Audio with OpenAI",
-    description="Generate simple, cost-effective calming audio instructions for yoga poses"
+    title="Generate Pose Audio with Piper",
+    description="Generate embeddable or downloadable calming audio instructions for yoga poses using Piper TTS"
 )
-async def generate_pose_audio_with_openai(
+async def generate_pose_audio_with_piper(
     asana_name: str = Field(description="Name of the yoga pose/asana to generate audio for"),
-    voice: str = Field(description="Calming voice (fixed to 'alloy' for consistency)", default="alloy"),
-    include_breathing_cues: bool = Field(description="Include simple breathing guidance", default=True)
+    voice: str = Field(description="Calming voice", default="en_US-lessac-medium"),
+    include_breathing_cues: bool = Field(description="Include simple breathing guidance", default=True),
+    output_format: str = Field(description="Output format: 'embedded' for inline audio, 'download' for file, 'both'", default="both"),
+    audio_directory: str = Field(description="Local directory to save audio files", default="./yoga_audio")
 ) -> Dict:
     """
-    Generate simple, cost-effective calming audio instructions for yoga poses.
+    Generate embeddable or downloadable calming audio instructions for yoga poses using Piper TTS.
     
-    This tool creates basic audio files with calming, gentle instructions:
-    - Uses consistent 'alloy' voice for soothing tone
-    - Fixed MP3 format to minimize costs
-    - Normal speech speed for clarity
-    - Simple English instructions only
-    - Focuses on essential guidance to keep audio short
+    This tool creates audio in multiple output formats:
+    - Embedded: Base64-encoded WAV for direct embedding in web/app interfaces
+    - Download: WAV file saved to user's local directory for download
+    - Both: Provides both embedded and downloadable formats
     
-    Note: Optimized for cost-effectiveness while maintaining quality.
+    Embedded Audio Features:
+    - Direct HTML5 audio element support
+    - Base64 data URI for immediate playback
+    - No file system dependencies
+    - Cross-platform compatibility
+    
+    Download Features:
+    - High-quality WAV files
+    - Organized file naming
+    - Local storage for offline use
+    
+    Note: Completely free and private - no external API calls.
     
     Args:
         asana_name: Name of the yoga pose to generate audio instructions for
-        voice: Fixed to 'alloy' for consistent calming tone
+        voice: Piper voice model (supports multiple calming voices)
         include_breathing_cues: Whether to include simple breath guidance
+        output_format: 'embedded' for inline audio, 'download' for file, 'both' for both formats
+        audio_directory: Local directory path for saved audio files (when downloading)
     
     Returns:
-        Dictionary containing audio data and metadata for the pose instructions
+        Dictionary containing:
+        - embedded_audio: Data URI and HTML5 audio element (if embedded/both)
+        - download_file: Local file information (if download/both)
+        - streaming_info: Instructions for client-side usage
+        - pose_info: Metadata about the yoga pose
     """
     
     # First, get the detailed procedure for the pose
@@ -438,38 +456,109 @@ async def generate_pose_audio_with_openai(
         include_breathing_cues=include_breathing_cues
     )
     
-    # Generate audio using OpenAI TTS with cost-effective settings
+    # Generate audio using Piper TTS with offline processing
     try:
-        audio_result = await call_openai_tts_api(
+        audio_result = await call_piper_tts_api(
             text=audio_script,
-            voice="alloy",  # Fixed calming voice
-            format="mp3",   # Standard format
-            speed=0.9       # Slightly slower for calming effect
+            voice=voice  # Use the specified Piper voice
         )
         
         if audio_result.get("success"):
-            return {
+            # Prepare streaming audio data
+            audio_base64 = audio_result["audio_base64"]
+            audio_size = audio_result["size_bytes"]
+            
+            # Create streaming response with direct audio access
+            response = {
                 "pose_info": {
                     "name": pose_info.get("name", asana_name),
-                    "type": "Simple calming instruction"
+                    "type": "Free offline calming instruction"
                 },
                 "audio_data": {
-                    "audio_content": audio_result["audio_base64"],
-                    "format": "mp3",
-                    "voice": "alloy",
-                    "speed": 0.9,
-                    "duration_estimate": audio_result.get("duration", "30-60 seconds"),
+                    "audio_content": audio_base64,  # Primary streaming data
+                    "format": "wav",
+                    "voice": voice,
+                    "size_bytes": audio_size,
+                    "duration_estimate": "30-60 seconds",
                     "breathing_cues_included": include_breathing_cues
+                },
+                "streaming_info": {
+                    "ready_for_streaming": True,
+                    "audio_format": "wav",
+                    "encoding": "base64",
+                    "usage": "Decode base64 to get WAV audio stream"
                 },
                 "script_text": audio_script,
                 "cost_optimization": {
-                    "model": "tts-1",
-                    "voice_used": "alloy",
-                    "note": "Optimized for cost-effectiveness with calming tone"
+                    "model": "piper-tts",
+                    "voice_used": voice,
+                    "note": "Completely free offline generation"
                 },
-                "generated_by": "Yoga Sequencing MCP Server - Simple Calming Audio",
-                "usage_notes": "Short, calming audio optimized for cost and effectiveness"
+                "generated_by": "Yoga Sequencing MCP Server - Free Offline Audio",
+                "usage_notes": "Audio ready for streaming or local storage"
             }
+            
+            # Handle different output formats
+            should_save = output_format in ["download", "both"]
+            should_embed = output_format in ["embedded", "both"]
+            
+            if should_save:
+                try:
+                    # Create audio directory if it doesn't exist
+                    os.makedirs(audio_directory, exist_ok=True)
+                    
+                    # Create safe filename
+                    safe_name = asana_name.replace(" ", "_").replace("/", "_").lower()
+                    filename = f"yoga_{safe_name}_{voice}.wav"
+                    filepath = os.path.join(audio_directory, filename)
+                    
+                    # Decode and save audio
+                    audio_data = base64.b64decode(audio_base64)
+                    with open(filepath, "wb") as f:
+                        f.write(audio_data)
+                    
+                    response["download_file"] = {
+                        "saved": True,
+                        "filepath": filepath,
+                        "filename": filename,
+                        "directory": audio_directory,
+                        "file_size_bytes": len(audio_data),
+                        "download_ready": True
+                    }
+                    
+                except Exception as save_error:
+                    response["download_file"] = {
+                        "saved": False,
+                        "error": str(save_error),
+                        "attempted_path": audio_directory,
+                        "download_ready": False
+                    }
+            
+            if should_embed:
+                try:
+                    # Create embedded audio data URI
+                    data_uri = f"data:audio/wav;base64,{audio_base64}"
+                    
+                    # Generate HTML5 audio element
+                    html_audio = f'<audio controls><source src="{data_uri}" type="audio/wav">Your browser does not support the audio element.</audio>'
+                    
+                    response["embedded_audio"] = {
+                        "data_uri": data_uri,
+                        "html_element": html_audio,
+                        "format": "base64_wav",
+                        "playback_ready": True,
+                        "usage_instructions": "Use data_uri for direct embedding or html_element for immediate HTML5 playback"
+                    }
+                except Exception as embed_error:
+                    response["embedded_audio"] = {
+                        "error": f"Failed to create embedded audio: {str(embed_error)}",
+                        "playback_ready": False
+                    }
+            
+            # Update streaming info with output format
+            response["streaming_info"]["output_format"] = output_format
+            
+            return response
         else:
             return {
                 "error": "Failed to generate audio",
@@ -479,9 +568,9 @@ async def generate_pose_audio_with_openai(
             
     except Exception as e:
         return {
-            "error": f"OpenAI TTS API error: {str(e)}",
+            "error": f"Piper TTS error: {str(e)}",
             "fallback_text": audio_script,
-            "suggestion": "Check your OpenAI API key and try again"
+            "suggestion": "Make sure Piper TTS is installed: pip install piper-tts"
         }
 
 
@@ -677,93 +766,184 @@ def generate_class_theme(
 """
 
 # =============================================================================
-# OPENAI TTS INTEGRATION FUNCTIONS
+# AUDIO STREAMING HELPER FUNCTIONS
 # =============================================================================
 
-async def call_openai_tts_api(text: str, voice: str, format: str, speed: float) -> Dict:
+def create_audio_stream_from_response(response: Dict) -> io.BytesIO:
     """
-    Call OpenAI's Text-to-Speech API to generate audio from text.
+    Create an audio stream from MCP server response for direct playback.
+    
+    This function demonstrates how clients can stream audio without saving to disk.
+    
+    Args:
+        response: Response from generate_pose_audio_with_piper tool
+    
+    Returns:
+        BytesIO stream containing WAV audio data ready for playback
+    
+    Example:
+        ```python
+        # Get audio from MCP server
+        result = await generate_pose_audio_with_piper("Mountain Pose")
+        
+        # Create streaming audio
+        audio_stream = create_audio_stream_from_response(result)
+        
+        # Play directly (example with pygame)
+        import pygame
+        pygame.mixer.init()
+        pygame.mixer.music.load(audio_stream)
+        pygame.mixer.music.play()
+        ```
+    """
+    
+    if not response.get("audio_data", {}).get("audio_content"):
+        raise ValueError("No audio content found in response")
+    
+    # Decode base64 audio data
+    audio_base64 = response["audio_data"]["audio_content"]
+    audio_data = base64.b64decode(audio_base64)
+    
+    # Create in-memory stream
+    audio_stream = io.BytesIO(audio_data)
+    audio_stream.seek(0)  # Reset to beginning
+    
+    return audio_stream
+
+
+def get_audio_metadata(response: Dict) -> Dict:
+    """
+    Extract audio metadata from MCP server response.
+    
+    Args:
+        response: Response from generate_pose_audio_with_piper tool
+    
+    Returns:
+        Dictionary containing audio format information
+    """
+    
+    audio_data = response.get("audio_data", {})
+    streaming_info = response.get("streaming_info", {})
+    
+    return {
+        "format": audio_data.get("format", "unknown"),
+        "size_bytes": audio_data.get("size_bytes", 0),
+        "voice": audio_data.get("voice", "unknown"),
+        "duration_estimate": audio_data.get("duration_estimate", "unknown"),
+        "encoding": streaming_info.get("encoding", "base64"),
+        "ready_for_streaming": streaming_info.get("ready_for_streaming", False)
+    }
+
+
+async def stream_pose_audio_example(pose_name: str, voice: str = "en_US-lessac-medium") -> None:
+    """
+    Example function showing how to stream yoga pose audio directly.
+    
+    This demonstrates the complete workflow:
+    1. Generate audio using MCP server
+    2. Create streaming audio without disk storage
+    3. Extract metadata for client applications
+    
+    Args:
+        pose_name: Name of yoga pose
+        voice: Piper voice model to use
+    """
+    
+    try:
+        # Generate audio using MCP server
+        print(f"🎵 Generating audio for {pose_name}...")
+        result = await generate_pose_audio_with_piper(
+            asana_name=pose_name,
+            voice=voice,
+            include_breathing_cues=True,
+            save_locally=False  # Pure streaming, no local file
+        )
+        
+        if result.get("audio_data"):
+            # Create streaming audio
+            audio_stream = create_audio_stream_from_response(result)
+            metadata = get_audio_metadata(result)
+            
+            print(f"✅ Audio stream ready!")
+            print(f"📊 Format: {metadata['format']}")
+            print(f"💾 Size: {metadata['size_bytes']} bytes")
+            print(f"🗣️ Voice: {metadata['voice']}")
+            print(f"⏱️ Duration: {metadata['duration_estimate']}")
+            print(f"🔄 Stream position: {audio_stream.tell()}/{len(audio_stream.getvalue())}")
+            
+            # Audio stream is now ready for playback
+            # Client applications can use audio_stream directly
+            
+        else:
+            print(f"❌ Failed to generate audio: {result.get('error', 'Unknown error')}")
+            
+    except Exception as e:
+        print(f"❌ Streaming error: {e}")
+
+
+# =============================================================================
+# PIPER TTS INTEGRATION FUNCTIONS
+# =============================================================================
+
+async def call_piper_tts_api(text: str, voice: str = "en_US-lessac-medium") -> Dict:
+    """
+    Call Piper TTS to generate audio from text using Python API.
     
     Args:
         text: Text content to convert to speech
-        voice: OpenAI TTS voice (alloy, echo, fable, onyx, nova, shimmer)
-        format: Audio format (mp3, opus, aac, flac)
-        speed: Speech speed (0.25 to 4.0)
+        voice: Piper voice model name (default: en_US-lessac-medium for calming female voice)
     
     Returns:
         Dictionary containing audio data and metadata
     """
     
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        return {
-            "success": False,
-            "error": "OpenAI API key not found. Please set OPENAI_API_KEY environment variable."
-        }
-    
-    # Validate parameters
-    valid_voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
-    valid_formats = ["mp3", "opus", "aac", "flac"]
-    
-    if voice not in valid_voices:
-        return {
-            "success": False,
-            "error": f"Invalid voice. Must be one of: {', '.join(valid_voices)}"
-        }
-    
-    if format not in valid_formats:
-        return {
-            "success": False,
-            "error": f"Invalid format. Must be one of: {', '.join(valid_formats)}"
-        }
-    
-    if not (0.25 <= speed <= 4.0):
-        return {
-            "success": False,
-            "error": "Speed must be between 0.25 and 4.0"
-        }
-    
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                "https://api.openai.com/v1/audio/speech",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json"
-                },
-                json={
-                    "model": "tts-1",
-                    "input": text,
-                    "voice": voice,
-                    "response_format": format,
-                    "speed": speed
-                }
-            )
-            
-            if response.status_code == 200:
-                # Convert audio bytes to base64 for JSON transport
-                audio_bytes = response.content
-                audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
-                
-                return {
-                    "success": True,
-                    "audio_base64": audio_base64,
-                    "size_bytes": len(audio_bytes),
-                    "format": format,
-                    "voice": voice,
-                    "speed": speed
-                }
-            else:
-                error_details = response.text
-                return {
-                    "success": False,
-                    "error": f"OpenAI API error: {response.status_code} - {error_details}"
-                }
-                
+        import wave
+        from piper import PiperVoice
+        
+        # Look for the voice model in the models folder
+        voice_model_path = f"./models/{voice}.onnx"
+        
+        # Check if model exists
+        if not os.path.exists(voice_model_path):
+            return {
+                "success": False,
+                "error": f"Voice model {voice}.onnx not found in ./models/ folder",
+                "suggestion": f"Please ensure {voice}.onnx is in the models directory"
+            }
+        
+        # Load the voice model
+        piper_voice = PiperVoice.load(voice_model_path)
+        
+        # Create audio in memory using BytesIO
+        audio_buffer = io.BytesIO()
+        with wave.open(audio_buffer, "wb") as wav_file:
+            piper_voice.synthesize_wav(text, wav_file)
+        
+        # Get the audio data
+        audio_data = audio_buffer.getvalue()
+        audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+        
+        return {
+            "success": True,
+            "audio_base64": audio_base64,
+            "size_bytes": len(audio_data),
+            "format": "wav",
+            "voice": voice,
+            "model": "piper-tts",
+            "voice_model_path": voice_model_path
+        }
+        
+    except ImportError as e:
+        return {
+            "success": False,
+            "error": f"Piper TTS not installed: {str(e)}",
+            "suggestion": "Install with: pip install piper-tts"
+        }
     except Exception as e:
         return {
             "success": False,
-            "error": f"Network error calling OpenAI API: {str(e)}"
+            "error": f"Piper TTS error: {str(e)}"
         }
 
 
