@@ -8,30 +8,25 @@ from pydantic import Field
 import os
 import json
 from typing import List, Dict, Optional
-from qdrant_client import QdrantClient
-from sentence_transformers import SentenceTransformer
 import mcp.types as types
 
 # Initialize FastMCP server
 mcp = FastMCP("Yoga Sequencing Server", port=3000, stateless_http=True, debug=True)
 
-# Initialize embedding model for semantic search
-embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-
-# Initialize Qdrant client
-def get_qdrant_client():
-    """Initialize Qdrant client with environment variables"""
-    qdrant_url = os.getenv("QDRANT_URL")
-    qdrant_api_key = os.getenv("QDRANT_API_KEY")
+# # Initialize Qdrant client (commented out)
+# def get_qdrant_client():
+#     """Initialize Qdrant client with environment variables"""
+#     qdrant_url = os.getenv("QDRANT_URL")
+#     qdrant_api_key = os.getenv("QDRANT_API_KEY")
     
-    if not qdrant_url:
-        raise ValueError("QDRANT_URL environment variable not set")
+#     if not qdrant_url:
+#         raise ValueError("QDRANT_URL environment variable not set")
     
-    return QdrantClient(
-        url=qdrant_url,
-        api_key=qdrant_api_key,
-        timeout=30
-    )
+#     return QdrantClient(
+#         url=qdrant_url,
+#         api_key=qdrant_api_key,
+#         timeout=30
+#     )
 
 # Yoga sequence templates for different styles and purposes
 SEQUENCE_TEMPLATES = {
@@ -202,96 +197,96 @@ def get_sequence_template(style: str, level: str) -> str:
     return json.dumps({"error": "Template not found"})
 
 
-@mcp.resource(
-    uri="poses://type/{pose_type}",
-    description="Get list of poses by type (Standing, Forward Bend, etc.)",
-    name="Poses by Type"
-)
-def get_poses_by_type_resource(pose_type: str) -> str:
-    """Resource to get poses by type"""
+# @mcp.resource(
+#     uri="poses://type/{pose_type}",
+#     description="Get list of poses by type (Standing, Forward Bend, etc.)",
+#     name="Poses by Type"
+# )
+# def get_poses_by_type_resource(pose_type: str) -> str:
+#     """Resource to get poses by type"""
     
-    try:
-        client = get_qdrant_client()
-        collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
+#     try:
+#         client = get_qdrant_client()
+#         collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
         
-        search_result = client.scroll(
-            collection_name=collection_name,
-            scroll_filter={
-                "must": [
-                    {
-                        "key": "pose_type",
-                        "match": {"any": [pose_type]}
-                    }
-                ]
-            },
-            limit=15,
-            with_payload=True
-        )
+#         search_result = client.scroll(
+#             collection_name=collection_name,
+#             scroll_filter={
+#                 "must": [
+#                     {
+#                         "key": "pose_type",
+#                         "match": {"any": [pose_type]}
+#                     }
+#                 ]
+#             },
+#             limit=15,
+#             with_payload=True
+#         )
         
-        poses = []
-        for point in search_result[0]:
-            pose_data = point.payload
-            poses.append({
-                "name": pose_data.get("name", ""),
-                "sanskrit_name": pose_data.get("sanskrit_name", ""),
-                "expertise_level": pose_data.get("expertise_level", ""),
-                "has_photo": pose_data.get("metadata", {}).get("has_photo", False)
-            })
+#         poses = []
+#         for point in search_result[0]:
+#             pose_data = point.payload
+#             poses.append({
+#                 "name": pose_data.get("name", ""),
+#                 "sanskrit_name": pose_data.get("sanskrit_name", ""),
+#                 "expertise_level": pose_data.get("expertise_level", ""),
+#                 "has_photo": pose_data.get("metadata", {}).get("has_photo", False)
+#             })
         
-        return json.dumps({
-            "pose_type": pose_type, 
-            "total_poses": len(poses),
-            "poses": poses
-        }, indent=2)
+#         return json.dumps({
+#             "pose_type": pose_type, 
+#             "total_poses": len(poses),
+#             "poses": poses
+#         }, indent=2)
         
-    except Exception as e:
-        return json.dumps({"error": f"Failed to get poses: {str(e)}"})
+#     except Exception as e:
+#         return json.dumps({"error": f"Failed to get poses: {str(e)}"})
 
 
-@mcp.resource(
-    uri="poses://expertise/{level}",
-    description="Get poses by expertise level (Beginner, Intermediate, Advanced)",
-    name="Poses by Expertise Level"
-)
-def get_poses_by_expertise_resource(level: str) -> str:
-    """Resource to get poses by expertise level"""
+# @mcp.resource(
+#     uri="poses://expertise/{level}",
+#     description="Get poses by expertise level (Beginner, Intermediate, Advanced)",
+#     name="Poses by Expertise Level"
+# )
+# def get_poses_by_expertise_resource(level: str) -> str:
+#     """Resource to get poses by expertise level"""
     
-    try:
-        client = get_qdrant_client()
-        collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
+#     try:
+#         client = get_qdrant_client()
+#         collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
         
-        search_result = client.scroll(
-            collection_name=collection_name,
-            scroll_filter={
-                "must": [
-                    {
-                        "key": "expertise_level",
-                        "match": {"text": level}
-                    }
-                ]
-            },
-            limit=20,
-            with_payload=True
-        )
+#         search_result = client.scroll(
+#             collection_name=collection_name,
+#             scroll_filter={
+#                 "must": [
+#                     {
+#                         "key": "expertise_level",
+#                         "match": {"text": level}
+#                     }
+#                 ]
+#             },
+#             limit=20,
+#             with_payload=True
+#         )
         
-        poses = []
-        for point in search_result[0]:
-            pose_data = point.payload
-            poses.append({
-                "name": pose_data.get("name", ""),
-                "sanskrit_name": pose_data.get("sanskrit_name", ""),
-                "pose_type": pose_data.get("pose_type", []),
-                "photo_url": pose_data.get("photo_url", "")
-            })
+#         poses = []
+#         for point in search_result[0]:
+#             pose_data = point.payload
+#             poses.append({
+#                 "name": pose_data.get("name", ""),
+#                 "sanskrit_name": pose_data.get("sanskrit_name", ""),
+#                 "pose_type": pose_data.get("pose_type", []),
+#                 "photo_url": pose_data.get("photo_url", "")
+#             })
         
-        return json.dumps({
-            "expertise_level": level,
-            "total_poses": len(poses), 
-            "poses": poses
-        }, indent=2)
+#         return json.dumps({
+#             "expertise_level": level,
+#             "total_poses": len(poses), 
+#             "poses": poses
+#         }, indent=2)
         
-    except Exception as e:
-        return json.dumps({"error": f"Failed to get poses: {str(e)}"})
+#     except Exception as e:
+#         return json.dumps({"error": f"Failed to get poses: {str(e)}"})
 
 
 
