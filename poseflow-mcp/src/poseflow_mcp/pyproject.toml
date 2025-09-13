@@ -1,0 +1,26 @@
+[project]
+name = "poseflow-mcp"
+version = "0.1.0"
+description = "soloscale_poseflow — Yoga posture MCP server (HTTP streamable)"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+  "mcp[cli]",
+  "fastapi==0.115.3",
+  "starlette==0.40.0",
+  "uvicorn==0.30.6",
+  "pydantic>=2.7,<3",
+  "numpy==1.26.4",
+  "opencv-python==4.10.0.84",
+  "httpx>=0.24,<0.28",
+  "python-dotenv",
+  "aiosmtplib",
+  "mediapipe"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uv]
+# (optional) keep default settings
