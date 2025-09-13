@@ -21,7 +21,7 @@ os.environ["TRANSPORT_TYPE"] = "streamable-http"
 # Import FastMCP
 from fastmcp import FastMCP
 from pydantic import Field
-from src.mcpservers.enhanced_yoga_curriculum_generator import EnhancedYogaCurriculumGenerator
+from enhanced_yoga_curriculum_generator import EnhancedYogaCurriculumGenerator
 
 # Import Qdrant dependencies  
 try:
