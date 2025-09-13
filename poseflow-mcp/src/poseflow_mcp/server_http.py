@@ -2,7 +2,7 @@ from __future__ import annotations
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from .server import mcp, record_pose, celebrate_if_correct, send_to_teacher, session_next_or_end, ask_send_teacher
+from main import mcp, record_pose, celebrate_if_correct, send_to_teacher, session_next_or_end, ask_send_teacher
 
 app = FastAPI(title="Poseflow MCP (HTTP)")
 app.mount("/mcp", mcp.streamable_http_app())
