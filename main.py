@@ -141,48 +141,48 @@ def create_yoga_sequence(
     return sequence
 
 
-@mcp.tool(
-    title="Semantic Pose Search",
-    description="Search yoga poses using natural language descriptions with semantic similarity"
-)
-def semantic_pose_search(
-    query: str = Field(description="Natural language search query (e.g., 'poses for tight hips', 'calming poses for stress')")
-) -> List[Dict]:
-    """Search poses using semantic similarity from Qdrant vector database"""
+# @mcp.tool(
+#     title="Semantic Pose Search",
+#     description="Search yoga poses using natural language descriptions with semantic similarity"
+# )
+# def semantic_pose_search(
+#     query: str = Field(description="Natural language search query (e.g., 'poses for tight hips', 'calming poses for stress')")
+# ) -> List[Dict]:
+#     """Search poses using semantic similarity from Qdrant vector database"""
     
-    try:
-        client = get_qdrant_client()
-        collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
+#     try:
+#         client = get_qdrant_client()
+#         collection_name = os.getenv("COLLECTION_NAME", "yoga_poses")
         
-        # Convert query to embedding vector
-        query_vector = embedding_model.encode(query).tolist()
+#         # Convert query to embedding vector
+#         query_vector = embedding_model.encode(query).tolist()
         
-        # Perform semantic search using vector similarity
-        search_result = client.search(
-            collection_name=collection_name,
-            query_vector=query_vector,
-            limit=10,
-            with_payload=True,
-            score_threshold=0.3  # Minimum similarity threshold
-        )
+#         # Perform semantic search using vector similarity
+#         search_result = client.search(
+#             collection_name=collection_name,
+#             query_vector=query_vector,
+#             limit=10,
+#             with_payload=True,
+#             score_threshold=0.3  # Minimum similarity threshold
+#         )
         
-        poses = []
-        for hit in search_result:
-            pose_data = hit.payload
-            poses.append({
-                "pose_name": pose_data.get("name", ""),
-                "sanskrit_name": pose_data.get("sanskrit_name", ""),
-                "expertise_level": pose_data.get("expertise_level", ""),
-                "pose_type": pose_data.get("pose_type", []),
-                "photo_url": pose_data.get("photo_url", ""),
-                "relevance_score": round(hit.score, 3),
-                "has_photo": pose_data.get("metadata", {}).get("has_photo", False)
-            })
+#         poses = []
+#         for hit in search_result:
+#             pose_data = hit.payload
+#             poses.append({
+#                 "pose_name": pose_data.get("name", ""),
+#                 "sanskrit_name": pose_data.get("sanskrit_name", ""),
+#                 "expertise_level": pose_data.get("expertise_level", ""),
+#                 "pose_type": pose_data.get("pose_type", []),
+#                 "photo_url": pose_data.get("photo_url", ""),
+#                 "relevance_score": round(hit.score, 3),
+#                 "has_photo": pose_data.get("metadata", {}).get("has_photo", False)
+#             })
         
-        return poses
+#         return poses
         
-    except Exception as e:
-        return [{"error": f"Failed to perform semantic search: {str(e)}"}]
+#     except Exception as e:
+#         return [{"error": f"Failed to perform semantic search: {str(e)}"}]
 
 
 @mcp.resource(
