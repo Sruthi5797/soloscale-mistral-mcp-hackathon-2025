@@ -8,4 +8,4 @@ def predict_pose_using_poseflow(image_url: str | None = None, image_b64: str | N
     r = httpx.post(f"{POSEFLOW_BACKEND}/infer", json=payload, timeout=30.0)
     r.raise_for_status()
     data = r.json()
-    return data["pose"], data["confidence"]
+    return data["pose"], data["confidence"] 
