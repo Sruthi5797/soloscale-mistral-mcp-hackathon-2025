@@ -7,20 +7,10 @@ name = "poseflow-mcp"
 version = "0.1.0"
 description = "soloscale_poseflow — Yoga posture MCP (HTTP streamable)"
 readme = "README.md"
-requires-python = ">=3.10"
-
-[project]
-name = "poseflow-mcp"
-version = "0.1.0"
-description = "soloscale_poseflow — Yoga posture MCP (HTTP streamable)"
-readme = "README.md"
 requires-python = ">=3.13"
 authors = [{ name = "Alpic" }]
 keywords = ["mcp", "llm", "alpic", "python"]
-dependencies = [
-    "black>=25.1.0",
-    "mcp",
-]
+
 
 dependencies = [
   "mcp",
