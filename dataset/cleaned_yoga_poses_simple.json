@@ -6,7 +6,9 @@
       "total_records": 100,
       "cleaned_records": 99,
       "removed_records": 1
-    }
+    },
+    "last_updated": "2025-09-13",
+    "procedure_field_added": true
   },
   "records": [
     {
@@ -24,7 +26,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Fold forward from your hips and grab your big toes with your first two fingers and thumbs. Keep a slight bend in your knees. Breathe deeply and gently straighten your legs as you pull on your toes."
     },
     {
       "id": "7ada962e-d54a-4f10-92bf-19aceb56d77a",
@@ -41,7 +44,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "From standing forward fold, slide your hands under your feet with palms facing up. Rest the tops of your feet on your hands. Bend your elbows and gently pull your torso closer to your legs. Keep breathing steadily."
     },
     {
       "id": "2ad49b2c-304b-4d28-93e7-6d1033e92221",
@@ -58,7 +62,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "From a standing position, bind one arm under and around your lifted leg. Slowly straighten the bound leg while maintaining your balance. Keep your standing leg strong and breathe deeply."
     },
     {
       "id": "8593f141-182f-4be8-8ef2-dcd88bd72888",
@@ -75,7 +80,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Similar to Bird of Paradise, but add a twist. Bind your leg and slowly rotate your torso in the opposite direction while extending the bound leg. Keep your core engaged and breathe slowly."
     },
     {
       "id": "e8654e6b-934b-4557-b0d6-3e6b462c22ad",
@@ -91,7 +97,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall in Mountain Pose. Inhale and sweep your arms up overhead. Keep your shoulders relaxed and reach through your fingertips toward the sky. Hold for several deep breaths."
     },
     {
       "id": "7558e4b3-0fe5-4712-b6dd-2e0f381423d5",
@@ -108,7 +115,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet together. Bend your knees and lower your hips as if sitting in an invisible chair. Raise your arms overhead. Keep your weight in your heels and breathe deeply."
     },
     {
       "id": "e4a8c0db-8d16-4747-9f17-e05cd7d573db",
@@ -125,7 +133,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Step one foot back into a lunge position. Keep your front knee directly over your ankle and back leg straight. Raise your arms overhead. Keep your core engaged and breathe steadily."
     },
     {
       "id": "3e18f080-8d31-4140-94de-33a98c078457",
@@ -142,7 +151,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "From high lunge, lower your back knee to the ground. Keep your front knee over your ankle. Place your hands on your front thigh or reach them overhead. Breathe deeply."
     },
     {
       "id": "44eb7487-c92e-41f5-aeb7-72b767ad8e2d",
@@ -159,7 +169,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand and wrap your right thigh over your left thigh. Hook your right foot behind your left calf if possible. Wrap your left arm under your right arm and bring palms together."
     },
     {
       "id": "70d146f6-09a4-4867-bfa6-376fc15785ec",
@@ -176,7 +187,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "8d2957ae-7e2d-4c0b-bd65-199b6457fe95",
@@ -193,7 +205,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "0c019975-b297-46df-a853-aeaa5a7c0584",
@@ -210,7 +223,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Hinge forward from your hips and fold over your legs. Keep your knees slightly bent and breathe deeply as you release into the pose."
     },
     {
       "id": "bd808ae6-4f93-4824-bfc5-95a5e8659366",
@@ -227,7 +241,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Hinge forward from your hips and fold over your legs. Keep your knees slightly bent and breathe deeply as you release into the pose."
     },
     {
       "id": "a6957955-2976-480d-bc39-6f5c4a78df71",
@@ -244,7 +259,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Hinge forward from your hips and fold over your legs. Keep your knees slightly bent and breathe deeply as you release into the pose."
     },
     {
       "id": "3168ebbe-c021-456e-86db-c18c94de8db0",
@@ -261,7 +277,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Hinge forward from your hips and fold over your legs. Keep your knees slightly bent and breathe deeply as you release into the pose."
     },
     {
       "id": "f2d5ad5b-47f1-43a0-bed4-54c9fa174b89",
@@ -277,7 +294,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "7659aee9-490e-4e73-8d64-5c90ea8877b6",
@@ -294,7 +312,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "4dd4a012-b9a3-4d3b-8016-cbff4f0ea478",
@@ -311,7 +330,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "f3e28e5d-02e6-48f7-95bc-f8f7eede8a42",
@@ -328,7 +348,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "2ae3c8f6-c38e-4f78-845f-14d8401e7f66",
@@ -349,7 +370,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "3dae7d05-3ab6-4e74-97a0-0e528db5c350",
@@ -370,7 +392,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "f6fb8dde-3725-4da3-aca2-b693014e01a7",
@@ -390,7 +413,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with feet parallel and hip-width apart. Ground through your feet, lengthen your spine, and relax your shoulders. Breathe deeply and feel your connection to the earth."
     },
     {
       "id": "33f12c2e-9905-4f69-8248-99eb9f6a6aaa",
@@ -407,7 +431,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Hinge forward from your hips and fold over your legs. Keep your knees slightly bent and breathe deeply as you release into the pose."
     },
     {
       "id": "8c19406f-08f0-4d99-a8f1-9bc279b2023f",
@@ -428,7 +453,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "8e1285d1-70cf-4755-b15f-6394643e0e1f",
@@ -449,7 +475,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "ab386aca-db88-4901-a889-34aaed6f8f45",
@@ -470,7 +497,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "86bf43dc-b30e-44aa-a3a1-97698d7ff9d7",
@@ -491,7 +519,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand in Mountain Pose. Shift weight to your left foot and place your right foot on your inner left thigh or calf. Avoid placing it on the knee. Bring your palms together at heart center or overhead."
     },
     {
       "id": "a32c1d8a-6294-429c-977b-12771e2bdd70",
@@ -512,7 +541,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet wide apart. Turn your right foot out ninety degrees. Reach your right hand toward the floor and place it on your shin, ankle, or a block. Extend your left arm toward the ceiling."
     },
     {
       "id": "59f40727-aef0-42c4-b500-f300f6bc18b3",
@@ -533,7 +563,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "c3651a52-3036-4809-b9d8-f16ca48cf48c",
@@ -553,7 +584,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "a009e40f-8e89-496f-ad9c-b46160402322",
@@ -573,7 +605,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "0a32c94f-3c78-4a3a-af6e-e863e6592d99",
@@ -594,7 +627,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand tall with your feet grounded. Engage your core and keep your breath steady as you hold this standing pose with awareness and stability."
     },
     {
       "id": "9d6bf056-bc3a-4e47-8eff-4ae1b27435b7",
@@ -615,7 +649,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Hinge forward from your hips and fold over your legs. Keep your knees slightly bent and breathe deeply as you release into the pose."
     },
     {
       "id": "673b1c2c-ee18-4ac6-94e6-c7cdb5dc7b13",
@@ -636,7 +671,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Hinge forward from your hips and fold over your legs. Keep your knees slightly bent and breathe deeply as you release into the pose."
     },
     {
       "id": "daeee8b7-8b12-4c91-8c57-f14b6c04c9ac",
@@ -657,7 +693,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Hinge forward from your hips and fold over your legs. Keep your knees slightly bent and breathe deeply as you release into the pose."
     },
     {
       "id": "4f8a263a-72c8-4776-898b-220389e286e5",
@@ -678,7 +715,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Hinge forward from your hips and fold over your legs. Keep your knees slightly bent and breathe deeply as you release into the pose."
     },
     {
       "id": "8e682820-216b-4ed1-94bd-037f3ca7043c",
@@ -699,7 +737,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Hinge forward from your hips and fold over your legs. Keep your knees slightly bent and breathe deeply as you release into the pose."
     },
     {
       "id": "002986e1-d353-4b32-8821-68f50df4d0be",
@@ -720,7 +759,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Stand with feet hip-width apart. Hinge forward from your hips and fold over your legs. Keep your knees slightly bent and breathe deeply as you release into the pose."
     },
     {
       "id": "67561a0d-79de-4611-af03-ecdcfdc53f2b",
@@ -739,7 +779,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "dcb4375d-2b8d-46d3-99ac-f1066f5705be",
@@ -758,7 +799,8 @@
       "metadata": {
         "has_followup_poses": true,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit with knees bent and feet on the floor. Lean back slightly and lift your feet, balancing on your sitting bones. Extend your arms forward and straighten your legs if possible."
     },
     {
       "id": "8134f451-5977-4101-932d-daa9695b5c4d",
@@ -774,7 +816,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit and bring the soles of your feet together, letting your knees fall to the sides. Hold your feet or ankles and gently fold forward, breathing deeply."
     },
     {
       "id": "a0972486-f2b9-48b5-834f-d802f7cf0c3a",
@@ -790,7 +833,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "c0527ddd-17f3-4feb-a803-259c7ee06f45",
@@ -806,7 +850,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "0f4a41ed-7abc-435b-9807-99b5b008775c",
@@ -822,7 +867,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit cross-legged with your spine tall. Rest your hands on your knees or in your lap. Close your eyes and breathe deeply, feeling grounded and centered."
     },
     {
       "id": "31c41ea1-a931-4b56-8f25-9d49b04f5935",
@@ -838,7 +884,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "5b137370-6068-442d-b9b5-6b706ad1c1d7",
@@ -854,7 +901,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "d86f18f4-6502-4c6e-89d6-10c1a38e9e86",
@@ -870,7 +918,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "50f98f03-08e5-46d6-ac7e-f2cef3bf1959",
@@ -887,7 +936,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "8d388194-bf4b-4ade-9c88-36d63d475c51",
@@ -904,7 +954,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "5503282d-9635-486b-a151-0d04515c9354",
@@ -921,7 +972,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "4309ea91-6473-4a1f-84a1-5034adf2f976",
@@ -938,7 +990,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "4f603d64-8736-4aa8-bd6e-693a84892b19",
@@ -955,7 +1008,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "1261b690-c7ce-4022-991a-527fd1874e19",
@@ -972,7 +1026,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "f3a38589-1f5d-464c-bb4e-1923a3b0785e",
@@ -989,7 +1044,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "c0afe6ec-8d89-4f93-8038-5cbc5316f5d0",
@@ -1005,7 +1061,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "63223615-9a19-49a2-82b3-afad54bb4066",
@@ -1022,7 +1079,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "9a47ec8f-f290-4a0d-bc7f-1564ebdf5949",
@@ -1039,7 +1097,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "e54229a4-5da9-4135-aeab-6d54ddae8529",
@@ -1056,7 +1115,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "263007b9-01a5-4374-8b66-a97b1e4babf4",
@@ -1073,7 +1133,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "f257c1ab-90b4-4a13-8388-1e94d62947dc",
@@ -1089,7 +1150,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "5a5f00f7-a5a8-4747-b401-d2f5da2b5b19",
@@ -1105,7 +1167,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "a0248fd8-1620-48b3-83bd-d612d7d19cfd",
@@ -1122,7 +1185,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Begin in a comfortable seated or standing position. Gently rotate your spine, keeping your core engaged. Breathe deeply and twist only as far as feels comfortable."
     },
     {
       "id": "362b0cf2-a5be-43b4-b82d-4112e167874d",
@@ -1139,7 +1203,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "10d1c2fb-a248-433b-9c94-90996cbfaf10",
@@ -1155,7 +1220,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "4901ac23-b464-4da0-bdbb-317389e0cd67",
@@ -1172,7 +1238,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "7597cec3-27eb-4a18-a928-5857604d950f",
@@ -1189,7 +1256,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "d5ca5dfb-153b-4742-b151-3e2f906ac405",
@@ -1206,7 +1274,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Begin in a comfortable seated or standing position. Gently rotate your spine, keeping your core engaged. Breathe deeply and twist only as far as feels comfortable."
     },
     {
       "id": "cbe92b61-dbe1-48f5-bb8c-82199bf76327",
@@ -1223,7 +1292,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Begin in a comfortable seated or standing position. Gently rotate your spine, keeping your core engaged. Breathe deeply and twist only as far as feels comfortable."
     },
     {
       "id": "009e3293-c725-4681-bbd1-055daf6a5f2a",
@@ -1240,7 +1310,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "9a3b68d3-c83a-4390-ad0b-fd34f73b9cdf",
@@ -1256,7 +1327,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "5371cebf-09be-4a55-ba2f-e29bd92885d0",
@@ -1272,7 +1344,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit or stand comfortably. Fold forward from your hips, keeping your spine long. Breathe deeply and allow gravity to help you deepen the pose gradually."
     },
     {
       "id": "1ada00c4-d323-41cf-b562-c794e3e265ec",
@@ -1288,7 +1361,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "051efce1-9bd0-4eff-b147-f9feaa5f8184",
@@ -1304,7 +1378,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Sit with legs extended in front of you and hands beside your hips. Press into your hands and lengthen your spine. Keep your legs active and breathe deeply."
     },
     {
       "id": "1a263dd1-23f5-47bf-989b-dea251601fa1",
@@ -1320,7 +1395,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "e1e43678-83b5-493d-9d15-e82340553371",
@@ -1337,7 +1413,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "59599206-c3ac-4474-aff3-aea2ec2005a2",
@@ -1353,7 +1430,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "5833d806-4650-4d2c-a3d8-760ebd98eebe",
@@ -1370,7 +1448,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Lie on your back with knees bent and feet hip-width apart. Press into your feet and lift your hips toward the ceiling. Keep your knees parallel and breathe deeply."
     },
     {
       "id": "ac66e2be-489f-4fed-b56d-b910dee436e8",
@@ -1386,7 +1465,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Lie on your back with legs extended and arms by your sides, palms facing up. Close your eyes and breathe naturally. Allow your entire body to relax completely."
     },
     {
       "id": "bae96b47-44be-4bba-8ac7-2b721a926b34",
@@ -1403,7 +1483,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Lie on your back with legs straight. Place your hands under your lower back and press into your forearms to lift your chest. Let the crown of your head rest lightly on the mat."
     },
     {
       "id": "74b888d7-3fd7-42b4-9dc1-7c1a0f6f8a2f",
@@ -1419,7 +1500,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "d570340d-2eb1-4c57-bfb1-b6eaeb2a2153",
@@ -1435,7 +1517,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "0e6b78d4-9d86-4986-9933-7a69f6c21063",
@@ -1451,7 +1534,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "ca70bf2c-8963-4468-8cfc-122138f158f2",
@@ -1467,7 +1551,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Lie on your back and hug your knees to your chest. Grab the outsides of your feet and draw your knees toward your armpits. Rock gently side to side."
     },
     {
       "id": "827fb058-8847-44bd-a7d9-628dd25b8b31",
@@ -1483,7 +1568,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "edbd9927-f6e2-4300-a330-fc5cf71c1e7f",
@@ -1500,7 +1586,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Begin in a comfortable seated or standing position. Gently rotate your spine, keeping your core engaged. Breathe deeply and twist only as far as feels comfortable."
     },
     {
       "id": "9d8c9fe4-bc6e-4e61-9df2-3e35ef919341",
@@ -1516,7 +1603,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "e2dbc350-db59-4119-9b4b-493115dc6f6d",
@@ -1532,7 +1620,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "9b221dde-fcd8-425f-a05d-b0e40cf68914",
@@ -1548,7 +1637,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "63be73f8-f293-423b-b137-2f5e53efb6ea",
@@ -1565,7 +1655,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "ae7ba0e4-5dce-4372-8b9b-f251d41d74d7",
@@ -1582,7 +1673,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "21cba1a5-c77a-4caa-b81d-da210aa60e9c",
@@ -1598,7 +1690,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Kneel on the floor and touch your big toes together. Sit back on your heels and fold forward, extending your arms in front of you or alongside your body. Rest your forehead on the mat."
     },
     {
       "id": "3cf294b1-adc1-4b93-aaa8-8b239ab7b1d2",
@@ -1615,7 +1708,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Lie on your belly with palms under your shoulders. Press into your hands and lift your chest, keeping your pelvis on the ground. Draw your shoulder blades down your back and breathe."
     },
     {
       "id": "73eae324-fd89-4a27-9753-ba486b37fffb",
@@ -1631,7 +1725,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "adde7cee-d80e-4447-9cc6-ec5bcaa319f8",
@@ -1648,7 +1743,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "45aa57b0-f4a6-4b36-8b4f-4610a424e8e9",
@@ -1665,7 +1761,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "122a4ea2-8e69-42ab-a5f9-58ff5035b6cc",
@@ -1682,7 +1779,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "42bbd1d7-2089-445d-a89c-e84d29f1c081",
@@ -1699,7 +1797,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "b3109849-073f-40da-8a15-02c97d9a314f",
@@ -1716,7 +1815,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     },
     {
       "id": "a3a45940-9039-4a82-9373-210a56df3a18",
@@ -1733,7 +1833,8 @@
       "metadata": {
         "has_followup_poses": false,
         "has_photo": true
-      }
+      },
+      "procedure": "Move into this pose with awareness and breath. Hold for several deep breaths, keeping your body relaxed and your mind focused. Come out of the pose slowly and mindfully."
     }
   ]
 }

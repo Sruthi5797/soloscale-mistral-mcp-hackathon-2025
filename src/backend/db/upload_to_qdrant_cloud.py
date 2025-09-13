@@ -145,8 +145,14 @@ class QdrantCloudUploader:
         """Prepare data points for Qdrant insertion."""
         print("🔄 Preparing points for upload...")
         
-        # Extract searchable texts for embedding
-        searchable_texts = [record['searchable_text'] for record in records]
+        # Extract searchable texts for embedding (include procedure for better semantic search)
+        searchable_texts = []
+        for record in records:
+            base_text = record['searchable_text']
+            procedure = record.get('procedure', '')
+            # Combine original searchable text with procedure for enhanced embeddings
+            enhanced_text = f"{base_text} {procedure}" if procedure else base_text
+            searchable_texts.append(enhanced_text)
         
         # Generate embeddings
         embeddings = self.generate_embeddings(searchable_texts)
@@ -167,6 +173,7 @@ class QdrantCloudUploader:
                 'followup_poses': record['followup_poses'],
                 'photo_url': record.get('photo_url'),
                 'searchable_text': record['searchable_text'],
+                'procedure': record.get('procedure', ''),
                 'has_followup_poses': record['metadata']['has_followup_poses'],
                 'has_photo': record['metadata']['has_photo']
             }
