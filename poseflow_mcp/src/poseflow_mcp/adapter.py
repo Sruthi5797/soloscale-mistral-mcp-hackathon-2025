@@ -1,7 +1,11 @@
-from __future__ import annotations
-from typing import Optional, Tuple
+import httpx
+import os
 
-# Implement this to call the AsanaAi repo
-def predict_pose_using_asanaai(image_url: Optional[str]=None, image_b64: Optional[str]=None) -> Tuple[str,float]:
-    """Return (pose_name, confidence) using the AsanaAi repo's predictor."""
-    raise NotImplementedError("Wire AsanaAi predictor here")
+POSEFLOW_BACKEND = os.getenv("POSEFLOW_BACKEND_URL", "http://localhost:4000")
+
+def predict_pose_using_poseflow(image_url: str | None = None, image_b64: str | None = None):
+    payload = {"image_url": image_url, "image_b64": image_b64}
+    r = httpx.post(f"{POSEFLOW_BACKEND}/infer", json=payload, timeout=30.0)
+    r.raise_for_status()
+    data = r.json()
+    return data["pose"], data["confidence"]
