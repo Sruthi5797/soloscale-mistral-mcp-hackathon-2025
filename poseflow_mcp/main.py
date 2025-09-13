@@ -36,7 +36,7 @@ def predict_pose(image_url: Optional[str] = None, image_b64: Optional[str] = Non
         return predict_pose_fallback(image_url=image_url, image_b64=image_b64)
 
 # ---------- MCP server ----------
-PORT = int(os.environ.get("PORT", "8080"))
+PORT = int(os.environ.get("PORT", "3000"))
 mcp = FastMCP("soloscale_poseflow", port=PORT, stateless_http=True, debug=True)
 
 STATE = {"threshold": 0.8}
