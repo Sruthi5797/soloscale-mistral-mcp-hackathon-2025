@@ -21,7 +21,7 @@ TOOLS:
    - Input: pose name, sanskrit name, expertise level, modifications option
    - Output: Detailed step-by-step instructions, alignment cues, and safety notes
 
-3. generate_simple_calming_audio - Cost-effective calming audio generation
+3. generate_pose_audio_with_openai - Cost-effective calming audio generation
    - Input: pose name (asana), simple breathing cues option
    - Output: Short, calming audio instructions optimized for minimal cost
 
@@ -386,7 +386,7 @@ def generate_pose_procedure(
 
 
 @mcp.tool(
-    title="Generate Simple Calming Audio",
+    title="Generate Pose Audio with OpenAI",
     description="Generate simple, cost-effective calming audio instructions for yoga poses"
 )
 async def generate_pose_audio_with_openai(

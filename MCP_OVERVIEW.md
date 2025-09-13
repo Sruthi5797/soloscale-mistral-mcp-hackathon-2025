@@ -52,7 +52,7 @@ The Yoga Class Sequencing MCP Server is an intelligent yoga instruction assistan
 - Expertise-level appropriate instructions
 - Safety-focused guidance
 
-#### `generate_simple_calming_audio`
+#### `generate_pose_audio_with_openai`
 **Purpose**: Generate cost-effective calming audio instructions for yoga poses
 
 **Inputs**:
@@ -173,9 +173,9 @@ export OPENAI_API_KEY="your_openai_api_key_here"
 "Create a 30-minute beginner hatha yoga sequence focused on strength"
 ```
 
-### Get Simple Calming Audio
+### Get Audio Instructions
 ```
-"Generate simple calming audio for Mountain Pose with breathing cues"
+"Generate calming audio for Mountain Pose with breathing cues using generate_pose_audio_with_openai"
 ```
 
 ### Generate Class Theme
@@ -207,10 +207,10 @@ export OPENAI_API_KEY="your_openai_api_key_here"
 - "Generate audio for Downward Dog with Sanskrit pronunciation"  
 - "Create spring theme for 60-minute vinyasa class"
 
-### 🔊 Simple Audio Instruction
-- "Generate simple calming audio for Child's Pose with breathing cues"
-- "Create cost-effective audio guidance for Mountain Pose"
-- "Simple audio for final relaxation with gentle voice"
+### 🔊 Audio Instruction
+- "Use generate_pose_audio_with_openai for Child's Pose with breathing cues"
+- "Create calming audio guidance for Mountain Pose"
+- "Generate audio for final relaxation with gentle voice"
 
 ### 🎨 Complete Class Planning
 - "Plan 45-minute stress relief class with theme and simple audio cues"
