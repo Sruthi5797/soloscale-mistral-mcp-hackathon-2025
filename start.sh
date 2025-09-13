@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
+echo "🚀 Starting Poseflow MCP on port 3000..."
 
-echo "Starting poseflow-backend (Node) on :4000 ..."
-cd src/poseflow_backend
-npm run start &    # run in background
-cd ../..
+# Default: MCP runs on 3000, Node backend on 4000
+export PORT=3000
+export BACKEND_PORT=4000
 
-echo "Starting Poseflow MCP (streamable-http) ..."
+# If you want to use an external backend, set POSEFLOW_BACKEND_URL before calling start.sh
+# export POSEFLOW_BACKEND_URL=https://your-backend-url
+
+# Start MCP (this will auto-spawn the Node backend if POSEFLOW_BACKEND_URL is not set)
 python -m poseflow_mcp.main
