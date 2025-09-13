@@ -15,6 +15,9 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 import logging
 
+# Set the MCP transport type environment variable
+os.environ["TRANSPORT_TYPE"] = "streamable-http"
+
 # Import FastMCP
 from fastmcp import FastMCP
 from pydantic import Field
@@ -437,11 +440,16 @@ async def startup():
 async def run_server():
     """Initialize and run the FastMCP server."""
     await startup()
-    await mcp.run_async()
+    # Run with streamable HTTP transport
+    await mcp.run_async(transport="streamable-http")
 
 if __name__ == "__main__":
+    # Ensure TRANSPORT_TYPE is set for container environment
+    os.environ["TRANSPORT_TYPE"] = "streamable-http"
+    
     print("🧘 Yoga Curriculum Generator MCP Server")
     print("=" * 50)
+    print(f"Transport: {os.environ.get('TRANSPORT_TYPE', 'streamable-http').upper()}")
     print("Features:")
     print("• Create comprehensive yoga curricula")
     print("• Search yoga poses with semantic matching")
