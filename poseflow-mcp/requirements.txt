@@ -1,0 +1,10 @@
+mcp[cli]
+fastapi
+uvicorn
+pydantic
+httpx
+numpy
+opencv-python
+python-dotenv
+aiosmtplib
+mediapipe
