@@ -1,1 +1,1 @@
-from .server import mcp
+# from main import mcp
