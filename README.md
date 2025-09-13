@@ -1,0 +1,1 @@
+# soloscale-mistral-mcp-hackathon-2025
