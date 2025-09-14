@@ -32,7 +32,7 @@ Focus on inspiring your students and growing your business—let us handle the r
 | Server | Branch | What It Does |
 |--------|--------|-------------|
 | **LeYogaContentCrte** | `feature/sruthi_alpic_deployment_audio_render` | Audio demo server for creating and sharing yoga content—currently in beta for experimentation and feedback! |
-| **QdrantLeYogaSequence** | `feature/sruthi_qdrant_mcp` | Curated yoga pose database for building smart, personalized sequences—ready for deployment and future expansion! |
+| **QdrantLeYogaSequence** | `feature/sruthi_qdrant_mcp` | Curated multi-modal yoga pose database for building smart, personalized sequences—ready for deployment and future expansion! |
 
 ## Help From Our Friends 💫
 
