@@ -1,20 +1,28 @@
 # SoloScale Yoga MCP 🧘‍♀️
 
-Hey there, yoga teachers! Welcome to our project designed to help you create engaging classes and keep your students coming back for more. We've created three friendly MCP servers to enhance your teaching and build a loyal student community.
+Welcome, yoga teachers! 🌟
 
-With the global wellness industry exceeding $4.5 trillion and over 300,000 yoga teachers worldwide struggling with fragmented tools, we saw the need for a unified platform. 
+Are you ready to create unforgettable classes and build a thriving student community? Our project brings you **three powerful MCP servers**—designed to make your teaching easier, more engaging, and more impactful.
 
-Most teachers juggle 5-7 different apps for sequence planning, student engagement, and pose instruction—wasting time that could be spent teaching. 
+**Why SoloScale Yoga MCP?**
+- The global wellness industry is booming ($4.5+ trillion!), yet over **300,000 yoga teachers** face scattered tools and wasted time.
+- Most teachers juggle **5–7 different apps** for planning, engagement, and pose correction—leaving less time for what you love: teaching.
 
-That's why we built this all-in-one (There could be more, but for now!) MCP solution to streamline your workflow and help you focus on what matters most: inspiring your students and growing your business.
+**Our Solution:**  
+A unified, all-in-one MCP platform that streamlines your workflow, so you can:
+- **Plan creative sequences** effortlessly
+- **Connect with students** and foster loyalty
+- **Guide poses** with smart, gentle feedback
+
+Focus on inspiring your students and growing your business—let us handle the rest. ✨
 
 ## Our Servers & Where to Find Them 🔍
 
 | Server | Branch | What It Does |
 |--------|--------|-------------|
 | **LeYogaSeqEnz** | `feature/sruthi_alpic_deployment` | Creates personalized yoga sequences with voice guidance - perfect for when you need inspiration for your practice! |
-| **LeYogaCommunity** | `feature/community` | Connects you with fellow yogis to share sequences and get feedback - because yoga is better together! |
-| **LeYogaPoseCrct** | `feature/pose_correction` | Helps improve your poses with gentle guidance and alignment tips - like having a teacher in your pocket! |
+| **LeYogaCommunity** | `feature/danushkumar_discord` | Connects you with fellow yogis to share sequences and get feedback - because yoga is better together! |
+| **LeYogaPoseCrct** | `feature/sabarish_post_corrector` | Helps improve your poses with gentle guidance and alignment tips - like having a teacher in your pocket! |
 
 
 ## Help From Our Friends 💫
