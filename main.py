@@ -502,23 +502,21 @@ async def generate_pose_audio_with_piper(
             
             # Handle different output preferences
             if output_preference == "download_link":
-                # Create a temporary download link
-                temp_directory = "./temp_downloads"
-                os.makedirs(temp_directory, exist_ok=True)
-                
-                temp_filepath = os.path.join(temp_directory, filename)
-                
-                # Save audio file temporarily
-                with open(temp_filepath, "wb") as f:
-                    f.write(audio_data)
-                
+                # Simple download - just provide the audio data without saving locally
                 response["download_info"] = {
                     "message": "Audio file ready for download",
                     "filename": filename,
                     "file_size_kb": round(len(audio_data) / 1024, 1),
                     "download_ready": True,
-                    "user_instructions": f"Your audio file '{filename}' has been generated. You can access it from the temporary downloads folder.",
-                    "file_location": "Saved in temp_downloads directory"
+                    "user_instructions": f"Audio generated successfully. Use the base64 data below to download '{filename}'.",
+                    "download_method": "Use base64_content to save file locally"
+                }
+                # Also include the base64 data for easy download
+                response["audio_data"] = {
+                    "base64_content": audio_base64,
+                    "format": "wav",
+                    "size_bytes": len(audio_data),
+                    "usage_instructions": "Copy this base64 data to create your audio file"
                 }
             
             elif output_preference == "base64_data":
@@ -533,39 +531,21 @@ async def generate_pose_audio_with_piper(
                 }
             
             elif output_preference == "save_to_user_path":
-                # Save to user's specified directory
-                if not user_save_path:
-                    return {
-                        "error": "User save path required when output_preference is 'save_to_user_path'",
-                        "suggestion": "Please provide a user_save_path parameter"
-                    }
-                
-                try:
-                    # Create user directory if it doesn't exist
-                    os.makedirs(user_save_path, exist_ok=True)
-                    
-                    user_filepath = os.path.join(user_save_path, filename)
-                    
-                    # Save audio file to user's path
-                    with open(user_filepath, "wb") as f:
-                        f.write(audio_data)
-                    
-                    response["save_info"] = {
-                        "saved": True,
-                        "filepath": user_filepath,
-                        "filename": filename,
-                        "directory": user_save_path,
-                        "file_size_kb": round(len(audio_data) / 1024, 1),
-                        "message": f"Audio saved to your specified location: {filename}"
-                    }
-                    
-                except Exception as save_error:
-                    response["save_info"] = {
-                        "saved": False,
-                        "error": str(save_error),
-                        "attempted_path": user_save_path,
-                        "message": "Failed to save to user-specified path"
-                    }
+                # Always fall back to base64 for cloud environments
+                response["save_info"] = {
+                    "saved": False,
+                    "error": "Cloud environment detected - file system is read-only",
+                    "message": "Using base64 data instead - see audio_data section below",
+                    "suggestion": "Copy the base64_content to save the file locally"
+                }
+                # Provide base64 data as fallback
+                response["audio_data"] = {
+                    "base64_content": audio_base64,
+                    "format": "wav",
+                    "size_bytes": len(audio_data),
+                    "usage_instructions": "Decode base64 to create WAV file",
+                    "filename_suggestion": filename
+                }
             
             return response
         else:
