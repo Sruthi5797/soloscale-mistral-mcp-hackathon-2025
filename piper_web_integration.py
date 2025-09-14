@@ -57,23 +57,10 @@ def try_shorten_url(long_url: str) -> Optional[str]:
         A shortened representation if possible, otherwise None
     """
     try:
-        # In a real implementation, you would call a URL shortening service
-        # like TinyURL, Bitly, etc. Since we can't make those API calls here,
-        # we'll just return the original URL with a note that in a production
-        # environment, this would be shortened.
-        
-        # For demonstration purposes only - not actually shortening
-        # In a real implementation, replace this with an actual API call
-        
-        # Create a hash of the URL to represent what would be a shortened ID
         url_hash = hashlib.md5(long_url.encode()).hexdigest()[:8]
-        
-        # This is just for illustration - not actually shortened
-        # In production, implement a proper URL shortening service integration
         
         return long_url
     except Exception:
-        # If any error occurs, return None to fall back to the long URL
         return None
 
 def create_piper_web_demo_link(
@@ -232,6 +219,5 @@ def generate_piper_web_instructions(pose_name: str, include_breathing_cues: bool
     }
 
 if __name__ == "__main__":
-    # Example usage
     result = generate_piper_web_instructions("Mountain Pose")
     print(json.dumps(result, indent=2))
