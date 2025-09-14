@@ -71,6 +71,18 @@ import base64
 import io
 from typing import List, Dict, Optional
 
+# Import the Piper web integration module
+try:
+    from piper_web_integration import (
+        generate_piper_web_instructions, 
+        create_piper_web_demo_link,
+        create_clickable_link
+    )
+    PIPER_WEB_DEMO_AVAILABLE = True
+except ImportError:
+    PIPER_WEB_DEMO_AVAILABLE = False
+    print("Piper web integration not available. Web demo links will not be generated.")
+
 # Initialize FastMCP server
 mcp = FastMCP("Yoga Sequencing Server", port=3000, stateless_http=True, debug=True)
 
@@ -1090,6 +1102,112 @@ def get_pose_with_sanskrit(pose_name: str, poses_list: List[Dict]) -> Dict:
 
 
 # =============================================================================
+# PIPER WEB DEMO INTEGRATION
+# =============================================================================
+
+@mcp.tool(
+    title="Generate Audio with Piper Web Demo",
+    description="Generate a yoga pose audio instruction using the Piper web demo"
+)
+def generate_piper_web_demo_link(
+    asana_name: str = Field(description="Name of the yoga pose/asana to generate audio for"),
+    include_breathing_cues: bool = Field(description="Include simple breathing guidance", default=True),
+    preferred_voice: str = Field(description="Preferred voice for audio generation", default="en_US-amy-medium")
+) -> Dict:
+    """
+    Generate yoga pose audio instructions using the Piper web demo.
+    
+    This tool creates a direct link to the Piper web demo with pre-filled yoga instructions.
+    The user simply needs to:
+    1. Click the provided link
+    2. Click "Synthesize" on the web page
+    3. Listen to or download the audio
+    
+    No local installation of Piper is required - everything runs in the browser.
+    
+    Args:
+        asana_name: Name of the yoga pose to generate audio for
+        include_breathing_cues: Whether to include breathing guidance
+        preferred_voice: Voice model to use (e.g., en_US-amy-medium)
+    
+    Returns:
+        Dictionary with audio link and clear user instructions
+    """
+    # Check if Piper web integration is available
+    if not PIPER_WEB_DEMO_AVAILABLE:
+        return {
+            "error": "Piper web integration is not available",
+            "suggestion": "Make sure piper_web_integration.py is in the same directory as main.py"
+        }
+    
+    try:
+        # First, get the detailed procedure for the pose if available
+        procedure_result = _generate_pose_procedure_internal(
+            pose_name=asana_name,
+            sanskrit_name="",
+            expertise_level="Beginner",
+            include_modifications=False
+        )
+        
+        # Check if we could get the procedure
+        if not procedure_result or "error" in procedure_result:
+            return {
+                "error": f"Could not find details for pose: {asana_name}",
+                "suggestion": "Please check the pose name and try again with a valid yoga pose name"
+            }
+        
+        # Get Sanskrit name if available
+        sanskrit_name = ""
+        if procedure_result and "pose_info" in procedure_result:
+            sanskrit_name = procedure_result["pose_info"].get("sanskrit_name", "")
+        
+        # Generate web demo link with our integrated function
+        result = generate_piper_web_instructions(
+            pose_name=asana_name,
+            include_breathing_cues=include_breathing_cues,
+            voice=preferred_voice
+        )
+        
+        # Create a clean, user-friendly response
+        response = {
+            "pose": {
+                "name": asana_name,
+                "sanskrit_name": sanskrit_name
+            },
+            "audio": {
+                "link": result["audio_link"],
+                "voice": preferred_voice,
+                "description": result["description"]
+            },
+            "instructions": result["instructions"],
+            "display": {
+                "message": f"Click below to generate audio for {asana_name}:",
+                "html_link": result["html_display"],
+                "markdown_link": result["markdown_display"]
+            }
+        }
+        
+        return response
+    
+    except Exception as e:
+        return {
+            "error": f"Error generating audio link: {str(e)}",
+            "suggestion": "Please check the pose name and try again, or make sure the Piper web integration is working properly",
+            "details": {
+                "pose": asana_name,
+                "include_breathing_cues": include_breathing_cues,
+                "voice": preferred_voice
+            }
+        }
+    
+    except Exception as e:
+        return {
+            "error": f"Error generating Piper web demo link: {str(e)}",
+            "suggestion": "Please check your inputs and try again"
+        }
+
+
+# =============================================================================
 # SERVER STARTUP
 # =============================================================================
 
@@ -1100,4 +1218,20 @@ if __name__ == "__main__":
     The server runs on port 3000 with streamable HTTP transport,
     making it compatible with MCP clients and Claude Desktop.
     """
+    # Display server startup information
+    print("\nStarting Yoga Sequencing MCP Server...")
+    print("Audio powered by Piper TTS")
+    
+    # Print Piper web demo information
+    if PIPER_WEB_DEMO_AVAILABLE:
+        print("✅ Piper Web Demo integration available")
+        print("   Use generate_piper_web_demo_link tool to create browser-based audio")
+        print("   Web demo URL: https://rhasspy.github.io/piper-samples/demo.html")
+    else:
+        print("❌ Piper Web Demo integration not available")
+        print("   Add piper_web_integration.py to enable browser-based audio")
+    
+    print("\nPress Ctrl+C to stop\n")
+    
+    # Run the MCP server
     mcp.run(transport="streamable-http")
