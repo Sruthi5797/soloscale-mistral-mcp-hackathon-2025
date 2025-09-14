@@ -13,8 +13,9 @@ A unified, all-in-one MCP based platform  that streamlines your workflow, so you
 - **Plan creative sequences** effortlessly
 - **Connect with students** and foster loyalty
 - **Guide poses** with smart, gentle feedback
+- **Create Content** additional stream of income and keep your sweet voice flowing ✨
 
-Focus on inspiring your students and growing your business—let us handle the rest. ✨
+Focus on inspiring your students and growing your business—let us handle the rest
 
 ## Our Servers & Where to Find Them 🔍
 
@@ -23,6 +24,13 @@ Focus on inspiring your students and growing your business—let us handle the r
 | **LeYogaSeqEnz** | `feature/sruthi_alpic_deployment` | Creates personalized yoga sequences with voice guidance - perfect for when you need inspiration for your practice! |
 | **LeYogaCommunity** | `feature/danushkumar_discord` | Connects you with fellow yogis to share sequences and get feedback - because yoga is better together! |
 | **LeYogaPoseCrct** | `feature/sabarish_post_corrector` | Helps improve your poses with gentle guidance and alignment tips - like having a teacher in your pocket! |
+
+### Note:
+We also created an audio demo in a separate server that can be extended for content creation. For demo purposes, we're keeping it in beta—introducing **LeYogaContentCrte**!
+
+| Server | Branch | What It Does |
+|--------|--------|-------------|
+| **LeYogaContentCrte** | `feature/sruthi_alpic_deployment_audio_render` | Audio demo server for creating and sharing yoga content—currently in beta for experimentation and feedback! |
 
 
 ## Help From Our Friends 💫
