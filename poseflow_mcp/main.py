@@ -44,9 +44,11 @@ NODE_CMD = ["node", "dist/server.js"]  # assumes you've built TS -> dist
 # Where record_pose will send requests:
 if REMOTE_BACKEND:
     POSE_API = REMOTE_BACKEND.rstrip("/")
+    POSE_BASE_PATH = ""          # direct to remote (e.g., /classify)
 else:
     # Default to calling the SAME MCP app (port 3000), which will proxy /pose/* → 4000
     POSE_API = f"http://127.0.0.1:{PORT}"
+    POSE_BASE_PATH = "/pose"     # use proxy prefix (e.g., /pose/classify)
 
 node_proc: subprocess.Popen | None = None
 
@@ -158,22 +160,28 @@ def record_pose(
     if not (landmarks or image_url or image_b64):
         return {"error": "Provide `landmarks` or `image_url`/`image_b64`"}
 
-    payload: Dict[str, Any] = {"threshold": th}
+    # Choose endpoint based on what we have:
+    # - If landmarks provided: hit /classify (exists now on your Space)
+    # - Else (image only): hit /pose/predict (501 until server-side detection is added)
     if landmarks:
-        payload["landmarks"] = landmarks
-    if image_url:
-        payload["imageUrl"] = image_url
-    if image_b64:
-        payload["imageB64"] = image_b64
+        endpoint = "/classify"
+        payload: Dict[str, Any] = {"landmarks": landmarks, "threshold": th}
+    else:
+        endpoint = "/pose/predict"
+        payload = {"threshold": th}
+        if image_url:
+            payload["imageUrl"] = image_url
+        if image_b64:
+            payload["imageB64"] = image_b64
 
+    url = f"{POSE_API}{POSE_BASE_PATH}{endpoint}"
     try:
-        r = requests.post(f"{POSE_API}/pose/predict", json=payload, timeout=30)
+        r = requests.post(url, json=payload, timeout=30)
         data = r.json()
     except Exception as e:
-        return {"error": "backend_unreachable", "details": str(e), "backend": POSE_API}
+        return {"error": "backend_unreachable", "details": str(e), "backend": url}
 
     if r.status_code != 200:
-        # e.g., { error: "not_implemented", ... } for image-only path
         return {"error": "backend_error", "status": r.status_code, "data": data}
 
     try:
