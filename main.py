@@ -835,7 +835,7 @@ def get_audio_metadata(response: Dict) -> Dict:
     }
 
 
-async def stream_pose_audio_example(pose_name: str, voice: str = "en_US-lessac-medium") -> None:
+async def stream_pose_audio_example(pose_name: str, voice: str = "en_US-amy-medium") -> None:
     """
     Example function showing how to stream yoga pose audio directly.
     
@@ -885,7 +885,7 @@ async def stream_pose_audio_example(pose_name: str, voice: str = "en_US-lessac-m
 # PIPER TTS INTEGRATION FUNCTIONS
 # =============================================================================
 
-async def call_piper_tts_api(text: str, voice: str = "en_US-lessac-medium") -> Dict:
+async def call_piper_tts_api(text: str, voice: str = "en_US-amy-medium") -> Dict:
     """
     Call Piper TTS to generate audio from text using Python API.
     
@@ -1060,7 +1060,6 @@ def select_poses_for_time(poses: List[Dict], time_minutes: int) -> List[Dict]:
         Subset of poses that fit within the time allocation
     """
     
-    # Roughly 1-2 minutes per pose depending on style
     target_poses = max(1, min(time_minutes // 1.5, len(poses)))
     return poses[:int(target_poses)]
 
