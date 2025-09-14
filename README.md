@@ -1,4 +1,4 @@
-# SoloScale Yoga MCP 🧘‍♀️
+# SoloScaleYoga 🧘‍♀️
 
 Welcome, yoga teachers! 🌟
 
@@ -9,7 +9,7 @@ Are you ready to create unforgettable classes and build a thriving student commu
 - Most teachers juggle **5–7 different apps** for planning, engagement, and pose correction—leaving less time for what you love: teaching.
 
 **Our Solution:**  
-A unified, all-in-one MCP platform that streamlines your workflow, so you can:
+A unified, all-in-one MCP based platform  that streamlines your workflow, so you can:
 - **Plan creative sequences** effortlessly
 - **Connect with students** and foster loyalty
 - **Guide poses** with smart, gentle feedback
