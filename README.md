@@ -26,12 +26,13 @@ Focus on inspiring your students and growing your business—let us handle the r
 | **LeYogaPoseCrct** | `feature/sabarish_post_corrector` | Helps improve your poses with gentle guidance and alignment tips - like having a teacher in your pocket! |
 
 ### Note:
-We also created an audio demo in a separate server that can be extended for content creation. For demo purposes, we're keeping it in beta—introducing **LeYogaContentCrte**!
+- Created an audio demo in a separate server that can be extended for content creation. For demo purposes, we're keeping it in beta—introducing **LeYogaContentCrte**!
+- We whipped up a Qdrant database for our Yoga pose collection—meet **QdrantLeYogaSequence**! It’s packed with curated poses and info to help you build smart, personalized sequences. It’s ready to roll on Alpic, but since it’s a big deployment, we’re holding off on hosting it for now.
 
 | Server | Branch | What It Does |
 |--------|--------|-------------|
 | **LeYogaContentCrte** | `feature/sruthi_alpic_deployment_audio_render` | Audio demo server for creating and sharing yoga content—currently in beta for experimentation and feedback! |
-
+| **QdrantLeYogaSequence** | `feature/sruthi_qdrant_mcp` | Curated yoga pose database for building smart, personalized sequences—ready for deployment and future expansion! |
 
 ## Help From Our Friends 💫
 
