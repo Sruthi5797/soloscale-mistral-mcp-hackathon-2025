@@ -81,6 +81,7 @@ The Yoga Class Sequencing MCP Server generates personalized yoga class sequences
 - Creates a link to the Piper web demo with pre-filled text
 - No local Piper installation required - runs in browser
 - Users click link, then click "Synthesize" on the web page
+- Includes fallback description text in case link pre-filling doesn't work
 - Use the `generate_piper_web_demo_link` tool
 
 ## Troubleshooting
@@ -128,20 +129,28 @@ def save_yoga_audio(response_json, output_file="yoga_pose.wav"):
 ```python
 import json
 import webbrowser
+import pyperclip  # For clipboard operations (pip install pyperclip)
 
 # Open Piper web demo from MCP response
 def open_piper_web_demo(response_json):
     data = json.loads(response_json)
     
-    # Check if direct link is available
-    if "direct_link" in data:
-        web_url = data["direct_link"]
+    # Check if audio link is available
+    if "audio" in data and "link" in data["audio"]:
+        web_url = data["audio"]["link"]
         print(f"Opening Piper web demo with pre-filled text...")
         webbrowser.open(web_url)
         
+        # Copy fallback description to clipboard for easy pasting
+        if "fallback" in data and "description_text" in data["fallback"]:
+            fallback_text = data["fallback"]["description_text"]
+            pyperclip.copy(fallback_text)
+            print("✅ Description text copied to clipboard as a fallback")
+        
         print("Instructions:")
         print("1. Click 'Synthesize' on the web page")
-        print("2. Use the download button (⬇️) to save the audio")
+        print("2. If text is not pre-filled, paste from clipboard")
+        print("3. Use the download button (⬇️) to save the audio")
     else:
         print("❌ No web demo link found in response")
 ```

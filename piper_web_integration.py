@@ -227,7 +227,8 @@ def generate_piper_web_instructions(pose_name: str, include_breathing_cues: bool
         "instructions": instructions,
         "voice": voice,
         "html_display": f'<a href="{web_link}" target="_blank">Generate audio for {pose_name} ▶️</a>',
-        "markdown_display": f"[Generate audio for {pose_name} ▶️]({web_link})"
+        "markdown_display": f"[Generate audio for {pose_name} ▶️]({web_link})",
+        "description_html": f'<div><strong>Audio Description:</strong><br/><pre>{yoga_text}</pre><br/><a href="{web_link}" target="_blank">Generate audio ▶️</a></div>'
     }
 
 if __name__ == "__main__":

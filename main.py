@@ -423,149 +423,165 @@ def generate_pose_procedure(
 
 @mcp.tool(
     title="Generate Pose Audio with Piper",
-    description="Generate calming audio instructions for yoga poses using Piper TTS with user-friendly output options"
+    description="Generate calming audio instructions for yoga poses using Piper TTS with HTML audio player"
 )
 async def generate_pose_audio_with_piper(
     asana_name: str = Field(description="Name of the yoga pose/asana to generate audio for"),
     voice: str = Field(description="Calming voice", default="en_US-amy-medium"),
     include_breathing_cues: bool = Field(description="Include simple breathing guidance", default=True),
-    output_preference: str = Field(description="How to deliver audio: 'download_link', 'base64_data', 'save_to_user_path'", default="download_link"),
-    user_save_path: str = Field(description="User's preferred save directory (only used if output_preference is 'save_to_user_path')", default="")
+    player_style: str = Field(description="HTML player style: 'simple', 'elegant', or 'minimal'", default="elegant")
 ) -> Dict:
     """
-    Generate calming audio instructions for yoga poses using Piper TTS with user-friendly delivery options.
-    
-    This tool creates audio with flexible delivery methods that respect user preferences:
-    - download_link: Creates audio file with simple download instructions (recommended for servers)
-    - base64_data: Returns base64-encoded audio data for direct use in applications
-    - save_to_user_path: Saves to user's specified directory
-    
-    Perfect for server deployments where users have different preferences for receiving audio files.
-    
+    Generate calming audio instructions for yoga poses using Piper TTS with HTML audio player.
+
+    This tool creates audio instructions and returns them with an embedded HTML player for direct playback:
+    - Audio plays directly in the interface with standard controls
+    - Includes option to download the audio file
+    - Shows the instruction text alongside the player
+    - Styled player with customizable appearance
+
+    Perfect for instant playback without requiring any file management from users.
+
     Args:
         asana_name: Name of the yoga pose to generate audio instructions for
         voice: Piper voice model (en_US-amy-medium available)
         include_breathing_cues: Whether to include simple breath guidance
-        output_preference: How to deliver the audio to the user
-        user_save_path: User's preferred save directory (only if save_to_user_path is selected)
-    
+        player_style: Visual style for the HTML audio player
+
     Returns:
-        Dictionary containing audio data according to user's output preference
+        Dictionary containing HTML audio player and instruction information
     """
-    
     # First, get the detailed procedure for the pose
     procedure_result = _generate_pose_procedure_internal(
         pose_name=asana_name,
         sanskrit_name="",
         expertise_level="Beginner",
-        include_modifications=False  # Simplified to reduce text length
+        include_modifications=False
     )
-    
+
     if not procedure_result or "error" in procedure_result:
         return {
             "error": f"Could not find procedure for pose: {asana_name}",
             "suggestion": "Please check the pose name and try again"
         }
-    
-    # Extract pose information
+
     pose_info = procedure_result.get("pose_info", {})
+    sanskrit_name = pose_info.get("sanskrit_name", "")
     
     # Create simple, calming audio script
     audio_script = create_simple_calming_script(
         pose_name=pose_info.get("name", asana_name),
         include_breathing_cues=include_breathing_cues
     )
-    
+
     # Generate audio using Piper TTS with offline processing
     try:
         audio_result = await call_piper_tts_api(
             text=audio_script,
-            voice=voice  # Use the specified Piper voice
+            voice=voice
         )
-        
-        if audio_result.get("success"):
-            # Prepare audio data
-            audio_base64 = audio_result["audio_base64"]
-            audio_size = audio_result["size_bytes"]
-            audio_data = base64.b64decode(audio_base64)
-            
-            # Create safe filename
-            safe_name = asana_name.replace(" ", "_").replace("/", "_").lower()
-            filename = f"yoga_{safe_name}_{voice}.wav"
-            
-            # Initialize response with common info
-            response = {
-                "pose_info": {
-                    "name": pose_info.get("name", asana_name),
-                    "type": "Free offline calming instruction"
-                },
-                "audio_info": {
-                    "format": "wav",
-                    "voice": voice,
-                    "size_bytes": audio_size,
-                    "duration_estimate": "30-60 seconds",
-                    "breathing_cues_included": include_breathing_cues,
-                    "filename": filename
-                },
-                "script_text": audio_script,
-                "delivery_method": output_preference,
-                "generated_by": "Yoga Sequencing MCP Server - User-Friendly Audio"
-            }
-            
-            # Handle different output preferences
-            if output_preference == "download_link":
-                # Simple download - just provide the audio data without saving locally
-                response["download_info"] = {
-                    "message": "Audio file ready for download",
-                    "filename": filename,
-                    "file_size_kb": round(len(audio_data) / 1024, 1),
-                    "download_ready": True,
-                    "user_instructions": f"Audio generated successfully. Use the base64 data below to download '{filename}'.",
-                    "download_method": "Use base64_content to save file locally"
-                }
-                # Also include the base64 data for easy download
-                response["audio_data"] = {
-                    "base64_content": audio_base64,
-                    "format": "wav",
-                    "size_bytes": len(audio_data),
-                    "usage_instructions": "Copy this base64 data to create your audio file"
-                }
-            
-            elif output_preference == "base64_data":
-                # Return base64 data for direct use
-                response["audio_data"] = {
-                    "base64_content": audio_base64,
-                    "encoding": "base64",
-                    "format": "wav",
-                    "size_bytes": len(audio_data),
-                    "usage_instructions": "Decode base64 to get WAV audio data",
-                    "ready_for_streaming": True
-                }
-            
-            elif output_preference == "save_to_user_path":
-                # Always fall back to base64 for cloud environments
-                response["save_info"] = {
-                    "saved": False,
-                    "error": "Cloud environment detected - file system is read-only",
-                    "message": "Using base64 data instead - see audio_data section below",
-                    "suggestion": "Copy the base64_content to save the file locally"
-                }
-                # Provide base64 data as fallback
-                response["audio_data"] = {
-                    "base64_content": audio_base64,
-                    "format": "wav",
-                    "size_bytes": len(audio_data),
-                    "usage_instructions": "Decode base64 to create WAV file",
-                    "filename_suggestion": filename
-                }
-            
-            return response
-        else:
+
+        if not audio_result.get("success"):
             return {
                 "error": "Failed to generate audio",
                 "details": audio_result.get("error", "Unknown error"),
                 "fallback_text": audio_script
             }
+        
+        # Prepare audio data
+        audio_base64 = audio_result["audio_base64"]
+        audio_data_url = f"data:audio/wav;base64,{audio_base64}"
+        safe_name = asana_name.replace(" ", "_").replace("/", "_").lower()
+        filename = f"yoga_{safe_name}_{voice}.wav"
+        
+        # Choose HTML template based on style
+        css_styles = {
+            "simple": """
+                .yoga-player-container { font-family: Arial, sans-serif; padding: 15px; max-width: 600px; }
+                .yoga-player-container h2 { color: #3a3a3a; }
+                .yoga-player-container audio { width: 100%; margin: 10px 0; }
+                .yoga-player-container .pose-info { margin-bottom: 15px; }
+                .yoga-player-container .download-btn { display: inline-block; margin-top: 10px; }
+                .yoga-player-container .script { background-color: #f5f5f5; padding: 10px; border-radius: 5px; }
+            """,
+            "elegant": """
+                .yoga-player-container { font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; padding: 20px; max-width: 650px; background-color: #f8f8f8; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                .yoga-player-container h2 { color: #4a6da7; margin-bottom: 5px; }
+                .yoga-player-container h3 { color: #888; font-style: italic; font-weight: normal; margin-top: 0; }
+                .yoga-player-container audio { width: 100%; margin: 15px 0; }
+                .yoga-player-container .pose-info { margin-bottom: 15px; color: #666; }
+                .yoga-player-container .download-btn { display: inline-block; background: #4a6da7; color: white; padding: 8px 15px; text-decoration: none; border-radius: 20px; margin-top: 10px; }
+                .yoga-player-container .download-btn:hover { background: #3a5d97; }
+                .yoga-player-container .script { background-color: #fff; padding: 15px; border-radius: 5px; border-left: 4px solid #4a6da7; margin-top: 15px; }
+            """,
+            "minimal": """
+                .yoga-player-container { font-family: system-ui, -apple-system, sans-serif; padding: 10px; max-width: 500px; }
+                .yoga-player-container h2 { color: #333; }
+                .yoga-player-container audio { width: 100%; }
+                .yoga-player-container .download-btn { display: inline-block; margin: 10px 0; color: #0066cc; }
+                .yoga-player-container .script { margin-top: 10px; }
+            """
+        }
+        
+        # Default to elegant if style not found
+        selected_style = css_styles.get(player_style, css_styles["elegant"])
+
+        # Create HTML with audio player
+        html_code = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Yoga Audio: {asana_name}</title>
+            <style>
+                {selected_style}
+            </style>
+        </head>
+        <body>
+            <div class="yoga-player-container">
+                <h2>{asana_name}</h2>
+                {f'<h3>{sanskrit_name}</h3>' if sanskrit_name else ''}
+                <div class="pose-info">
+                    <span>Voice: {voice}</span>
+                </div>
+                
+                <audio controls autoplay>
+                    <source src="{audio_data_url}" type="audio/wav">
+                    Your browser does not support the audio element.
+                </audio>
+                
+                <div>
+                    <a href="{audio_data_url}" download="{filename}" class="download-btn">Download Audio</a>
+                </div>
+                
+                <div class="script">
+                    <strong>Instructions:</strong><br>
+                    {audio_script}
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+        # Return a clean response with just what's needed
+        return {
+            "pose_info": {
+                "name": asana_name,
+                "sanskrit_name": sanskrit_name,
+                "expertise_level": pose_info.get("expertise_level", "Beginner")
+            },
+            "audio_info": {
+                "voice": voice,
+                "breathing_cues_included": include_breathing_cues
+            },
+            "script_text": audio_script,
+            "html_player": {
+                "code": html_code,
+                "style": player_style,
+                "audio_data_url": audio_data_url,
+                "download_filename": filename
+            },
+            "generated_by": "Yoga Sequencing MCP Server - HTML Audio Player"
+        }
             
     except Exception as e:
         return {
@@ -573,7 +589,7 @@ async def generate_pose_audio_with_piper(
             "fallback_text": audio_script,
             "suggestion": "Make sure Piper TTS is installed: pip install piper-tts"
         }
-
+        
 
 @mcp.resource(
     uri="sequence://template/{style}/{level}",
@@ -831,7 +847,7 @@ def get_audio_metadata(response: Dict) -> Dict:
         "size_bytes": audio_data.get("size_bytes", 0),
         "voice": audio_data.get("voice", "unknown"),
         "duration_estimate": audio_data.get("duration_estimate", "unknown"),
-        "encoding": streaming_info.get("encoding", "base64"),
+        #"encoding": streaming_info.get("encoding", "base64"),
         "ready_for_streaming": streaming_info.get("ready_for_streaming", False)
     }
 
@@ -1106,40 +1122,30 @@ def get_pose_with_sanskrit(pose_name: str, poses_list: List[Dict]) -> Dict:
 # =============================================================================
 
 @mcp.tool(
-    title="Generate Audio with Piper Web Demo",
-    description="Generate a yoga pose audio instruction using the Piper web demo"
+    title="Generate Audio with Piper",
+    description="Generate a yoga pose audio instruction with a link to the Piper web demo"
 )
 def generate_piper_web_demo_link(
     asana_name: str = Field(description="Name of the yoga pose/asana to generate audio for"),
     include_breathing_cues: bool = Field(description="Include simple breathing guidance", default=True),
-    preferred_voice: str = Field(description="Preferred voice for audio generation", default="en_US-amy-medium")
+    preferred_voice: str = Field(description="Voice for audio generation", default="en_US-amy-medium")
 ) -> Dict:
     """
-    Generate yoga pose audio instructions using the Piper web demo.
+    Generate a link to the Piper web demo with pre-filled text for yoga pose instructions.
     
-    This tool creates a direct link to the Piper web demo with pre-filled yoga instructions.
-    The user simply needs to:
-    1. Click the provided link
-    2. Click "Synthesize" on the web page
-    3. Listen to or download the audio
-    
-    No local installation of Piper is required - everything runs in the browser.
+    This tool creates a simple script for yoga instructions and provides:
+    1. A link to the Piper web demo with pre-filled text
+    2. Instructions on how to use the web demo
+    3. A fallback option with the raw text if needed
     
     Args:
         asana_name: Name of the yoga pose to generate audio for
         include_breathing_cues: Whether to include breathing guidance
-        preferred_voice: Voice model to use (e.g., en_US-amy-medium)
+        preferred_voice: Voice model to use (defaults to en_US-amy-medium)
     
     Returns:
-        Dictionary with audio link and clear user instructions
+        Dictionary with web link and instruction information
     """
-    # Check if Piper web integration is available
-    if not PIPER_WEB_DEMO_AVAILABLE:
-        return {
-            "error": "Piper web integration is not available",
-            "suggestion": "Make sure piper_web_integration.py is in the same directory as main.py"
-        }
-    
     try:
         # First, get the detailed procedure for the pose if available
         procedure_result = _generate_pose_procedure_internal(
@@ -1161,49 +1167,65 @@ def generate_piper_web_demo_link(
         if procedure_result and "pose_info" in procedure_result:
             sanskrit_name = procedure_result["pose_info"].get("sanskrit_name", "")
         
-        # Generate web demo link with our integrated function
-        result = generate_piper_web_instructions(
+        # Create simple, calming audio script
+        audio_script = create_simple_calming_script(
             pose_name=asana_name,
-            include_breathing_cues=include_breathing_cues,
-            voice=preferred_voice
+            include_breathing_cues=include_breathing_cues
         )
         
-        # Create a clean, user-friendly response
-        response = {
+        # URL encode the text for the link
+        import urllib.parse
+        encoded_text = urllib.parse.quote(audio_script)
+        
+        # Create a link to the Piper web demo with the text pre-filled
+        demo_link = f"https://rhasspy.github.io/piper-samples/demo.html?text={encoded_text}&speaker={preferred_voice}&noiseScale=0.667&noiseW=0.8&lengthScale=1.0"
+        
+        # Create HTML and Markdown links
+        html_link = f'<a href="{demo_link}" target="_blank">Generate audio for {asana_name} ▶️</a>'
+        markdown_link = f"[Generate audio for {asana_name} ▶️]({demo_link})"
+        
+        # Create description HTML with pre-formatted text
+        description_html = f'<div><strong>Audio Description:</strong><br/><pre>{audio_script}</pre><br/><a href="{demo_link}" target="_blank">Generate audio ▶️</a></div>'
+        
+        # Return a clean response
+        return {
             "pose": {
                 "name": asana_name,
                 "sanskrit_name": sanskrit_name
             },
             "audio": {
-                "link": result["audio_link"],
+                "link": demo_link,
                 "voice": preferred_voice,
-                "description": result["description"]
+                "description": audio_script
             },
-            "instructions": result["instructions"],
+            "instructions": [
+                "1. Click the link below to open Piper TTS with pre-filled instructions for " + asana_name,
+                "2. On the webpage, click the 'Synthesize' button to generate the audio",
+                "3. Listen to the yoga instructions",
+                "4. To save the audio, click the download button (arrow pointing down)",
+                "5. You can adjust the voice or other parameters if desired"
+            ],
             "display": {
                 "message": f"Click below to generate audio for {asana_name}:",
-                "html_link": result["html_display"],
-                "markdown_link": result["markdown_display"]
-            }
-        }
-        
-        return response
-    
-    except Exception as e:
-        return {
-            "error": f"Error generating audio link: {str(e)}",
-            "suggestion": "Please check the pose name and try again, or make sure the Piper web integration is working properly",
-            "details": {
-                "pose": asana_name,
-                "include_breathing_cues": include_breathing_cues,
-                "voice": preferred_voice
+                "html_link": html_link,
+                "markdown_link": markdown_link,
+                "description_html": description_html
+            },
+            "fallback": {
+                "message": "If the link doesn't pre-fill the text in the web demo, copy and paste this text:",
+                "text": audio_script
             }
         }
     
     except Exception as e:
         return {
-            "error": f"Error generating Piper web demo link: {str(e)}",
-            "suggestion": "Please check your inputs and try again"
+            "error": f"Error generating link: {str(e)}",
+            "suggestion": "Please check the pose name and try again"
+        }
+    except Exception as e:
+        return {
+            "error": f"Error generating link: {str(e)}",
+            "suggestion": "Please check the pose name and try again"
         }
 
 
@@ -1223,13 +1245,9 @@ if __name__ == "__main__":
     print("Audio powered by Piper TTS")
     
     # Print Piper web demo information
-    if PIPER_WEB_DEMO_AVAILABLE:
-        print("✅ Piper Web Demo integration available")
-        print("   Use generate_piper_web_demo_link tool to create browser-based audio")
-        print("   Web demo URL: https://rhasspy.github.io/piper-samples/demo.html")
-    else:
-        print("❌ Piper Web Demo integration not available")
-        print("   Add piper_web_integration.py to enable browser-based audio")
+    print("✅ Piper Web Demo integration available")
+    print("   Use generate_piper_web_demo_link tool to create links to the Piper web demo")
+    print("   Auto-fills text in web interface and provides fallback text option")
     
     print("\nPress Ctrl+C to stop\n")
     
