@@ -15,17 +15,16 @@ export const POINTS = {
   LEFT_KNEE: 13,
   RIGHT_KNEE: 14,
   LEFT_ANKLE: 15,
-  RIGHT_ANKLE: 16
+  RIGHT_ANKLE: 16,
 } as const;
 
-/** Map YOUR class names to the column index the model expects */
+// Indices in your classifier’s output vector
 export const CLASS_NO: Record<string, number> = {
-  // Example (adjust to your model’s order)
-  "Tree": 0,
-  "Cobra": 1,
-  "Dog": 2,
-  "Warrior": 3,
-  "Chair": 4,
-  "Triangle": 5,
-  "Shoulderstand": 6
+  Tree: 0,
+  Cobra: 1,
+  Dog: 2,
+  Warrior: 3,
+  Chair: 4,
+  Triangle: 5,
+  Shoulderstand: 6,
 };
