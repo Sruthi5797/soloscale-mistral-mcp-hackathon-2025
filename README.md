@@ -34,6 +34,8 @@ Focus on inspiring your students and growing your business—let us handle the r
 | **LeYogaContentCrte** | `feature/sruthi_alpic_deployment_audio_render` | Audio demo server for creating and sharing yoga content—currently in beta for experimentation and feedback! |
 | **QdrantLeYogaSequence** | `feature/sruthi_qdrant_mcp` | Curated multi-modal yoga pose database for building smart, personalized sequences—ready for deployment and future expansion! |
 
+![Sample Yoga Pose Record](.assets/sample_YogaPoseRecord.png)
+
 ## Help From Our Friends 💫
 
 These servers were built with love (and lot of help from Mistral Medium and Claude Sonnet), So we really vibe coded it :D
