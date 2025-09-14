@@ -53,21 +53,20 @@ The Yoga Class Sequencing MCP Server is an intelligent yoga instruction assistan
 - Safety-focused guidance
 
 #### `generate_pose_audio_with_piper`
-**Purpose**: Generate free offline embeddable or downloadable calming audio instructions for yoga poses
+**Purpose**: Generate free offline calming audio instructions for yoga poses with user-friendly delivery options
 
 **Inputs**:
 - `asana_name`: Name of the yoga pose
-- `voice`: Calming voice selection (en_US-lessac-medium, en_US-amy-medium)
+- `voice`: Calming voice selection (en_US-amy-medium)
 - `include_breathing_cues`: Add simple breathing guidance (true/false)
-- `output_format`: Audio format ('embedded', 'download', 'both')
-- `audio_directory`: Local directory for saved files (default: ./yoga_audio)
+- `output_preference`: How to deliver audio ('download_link', 'base64_data', 'save_to_user_path')
+- `user_save_path`: User's preferred save directory (only used if output_preference is 'save_to_user_path')
 
-**Output**: Comprehensive audio package including:
-- **Embedded Audio**: Base64 data URI for immediate HTML5 playback
-- **Download Audio**: WAV file saved to local directory
-- **Streaming Data**: Ready-to-use audio stream for direct integration
-- **HTML5 Elements**: Pre-generated audio tags for web embedding
-- **Metadata**: Technical details and usage instructions
+**Output**: User-friendly audio package including:
+- **Download Link**: Simple download instructions for generated audio file
+- **Base64 Data**: Encoded audio data for direct application use
+- **User Save Path**: Audio saved to user's specified directory
+- **Metadata**: Audio format details and usage instructions
 
 **Key Features**:
 - **Completely Free**: No API costs - runs entirely offline
@@ -215,13 +214,6 @@ This MCP server combines traditional yoga wisdom with modern offline AI capabili
 "Generate embedded audio for Mountain Pose with breathing cues using generate_pose_audio_with_piper"
 ```
 
-### Alternative Audio Generation (Mistral LeChat Compatible)
-```
-"Create audio instructions script for Mountain Pose that can be used with any TTS service"
-"Generate text-to-speech ready content for Warrior II pose with breathing cues"
-"Make TTS-compatible instruction text for Child's Pose with timing markers"
-```
-
 ### Generate Class Theme
 ```
 "Create a spring-themed class intention for 45-minute vinyasa practice"
@@ -328,36 +320,47 @@ This MCP server combines traditional yoga wisdom with modern offline AI capabili
 
 ### Audio Output Formats
 
-#### Embedded Format (`output_format="embedded"`)
+#### Base64 Data Format (`output_preference="base64_data"`)
 ```json
 {
-  "embedded_audio": {
-    "data_uri": "data:audio/wav;base64,UklGRiR6BwBXQVZF...",
-    "html_element": "<audio controls><source src='data:audio/wav;base64,...' type='audio/wav'>",
-    "format": "base64_wav",
-    "playback_ready": true,
-    "usage_instructions": "Use data_uri for direct embedding or html_element for immediate HTML5 playback"
+  "audio_data": {
+    "base64_content": "UklGRiR6BwBXQVZF...",
+    "encoding": "base64",
+    "format": "wav",
+    "size_bytes": 490028,
+    "usage_instructions": "Decode base64 to get WAV audio data",
+    "ready_for_streaming": true
   }
 }
 ```
 
-#### Download Format (`output_format="download"`)
+#### Download Link Format (`output_preference="download_link"`)
 ```json
 {
-  "download_file": {
+  "download_info": {
+    "message": "Audio file ready for download",
+    "filename": "yoga_mountain_pose_en_US-amy-medium.wav",
+    "file_size_kb": 478.5,
+    "download_ready": true,
+    "user_instructions": "Your audio file has been generated and is ready for download",
+    "file_location": "Saved in temp_downloads directory"
+  }
+}
+```
+
+#### User Save Path Format (`output_preference="save_to_user_path"`)
+```json
+{
+  "save_info": {
     "saved": true,
-    "filepath": "./yoga_audio/yoga_mountain_pose_en_US-lessac-medium.wav",
-    "filename": "yoga_mountain_pose_en_US-lessac-medium.wav",
-    "file_size_bytes": 490028,
-    "download_ready": true
+    "filepath": "/user/specified/path/yoga_mountain_pose_en_US-amy-medium.wav",
+    "filename": "yoga_mountain_pose_en_US-amy-medium.wav",
+    "directory": "/user/specified/path",
+    "file_size_kb": 478.5,
+    "message": "Audio saved to your specified location"
   }
 }
 ```
-
-#### Both Formats (`output_format="both"`)
-- Provides both embedded and download objects
-- Maximum flexibility for client integration
-- Single API call for dual-format output
 
 ### Audio Quality Specifications
 - **Sample Rate**: 22,050 Hz (high quality for voice)
@@ -368,7 +371,7 @@ This MCP server combines traditional yoga wisdom with modern offline AI capabili
 - **File Size**: ~490 KB for typical 30-60 second instructions
 
 ### Voice Options
-- **en_US-lessac-medium**: Clear, calm female voice (recommended)
+- **en_US-amy-medium**: Clear, calm female voice (recommended for yoga instruction)
 - **en_US-amy-medium**: Gentle, soothing female voice
 - **Custom voices**: Easy to add additional Piper TTS voices
 

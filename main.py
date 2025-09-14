@@ -284,37 +284,22 @@ def create_yoga_sequence(
     return sequence
 
 
-@mcp.tool(
-    title="Generate Pose Procedure",
-    description="Generate detailed step-by-step instructions for a yoga pose using AI"
-)
-def generate_pose_procedure(
-    pose_name: str = Field(description="English name of the yoga pose"),
-    sanskrit_name: str = Field(description="Sanskrit name of the yoga pose", default=""),
-    expertise_level: str = Field(description="Difficulty level: Beginner, Intermediate, or Advanced", default="Beginner"),
-    include_modifications: bool = Field(description="Include modifications and variations", default=True)
+# =============================================================================
+# INTERNAL HELPER FUNCTIONS
+# =============================================================================
+
+def _generate_pose_procedure_internal(
+    pose_name: str,
+    sanskrit_name: str = "",
+    expertise_level: str = "Beginner",
+    include_modifications: bool = True
 ) -> Dict:
     """
-    Generate comprehensive pose instructions using OpenAI's TTS model.
-    
-    This tool creates detailed, step-by-step procedures for yoga poses including:
-    - Entry and exit instructions
-    - Alignment cues and safety tips
-    - Breathing guidance
-    - Common modifications and variations
-    - Benefits and contraindications
-    
-    Args:
-        pose_name: English name of the pose
-        sanskrit_name: Sanskrit name (optional)
-        expertise_level: Difficulty level for appropriate instruction depth
-        include_modifications: Whether to include pose variations
-    
-    Returns:
-        Dictionary containing comprehensive pose information and instructions
+    Internal helper function for generating pose procedures.
+    This can be called from other functions without MCP tool wrapper issues.
     """
     
-    # Base procedure template (enhanced with OpenAI TTS model integration)
+    # Base procedure template
     base_procedures = {
         "Mountain Pose": "Stand tall with feet hip-width apart. Ground through your feet, lengthen your spine, and relax your shoulders. Breathe deeply and find your center.",
         "Child's Pose": "Kneel on the floor, touch your big toes together and sit back on your heels. Separate your knees about hip-width apart. Fold forward, extending your arms in front of you or alongside your body.",
@@ -327,7 +312,7 @@ def generate_pose_procedure(
     base_procedure = base_procedures.get(pose_name, 
         f"This is a {expertise_level.lower()} level yoga pose. Begin by finding a stable foundation and moving mindfully into the pose. Listen to your body and breathe deeply throughout.")
     
-    # Enhanced procedure with OpenAI TTS-style detailed instructions
+    # Enhanced procedure with detailed instructions
     enhanced_procedure = f"""
 **POSE SETUP:**
 {base_procedure}
@@ -382,59 +367,82 @@ def generate_pose_procedure(
         "estimated_duration": "30-60 seconds for beginners, 1-2 minutes for advanced",
         "benefits": f"This pose helps improve strength, flexibility, and body awareness appropriate for {expertise_level.lower()} practitioners.",
         "contraindications": "Avoid if you have relevant injuries. Consult with a qualified instructor if unsure.",
-        "generated_by": "Yoga Sequencing MCP Server with OpenAI TTS AI enhancement"
+        "generated_by": "Yoga Sequencing MCP Server with AI enhancement"
     }
 
 
 @mcp.tool(
+    title="Generate Pose Procedure",
+    description="Generate detailed step-by-step instructions for a yoga pose using AI"
+)
+def generate_pose_procedure(
+    pose_name: str = Field(description="English name of the yoga pose"),
+    sanskrit_name: str = Field(description="Sanskrit name of the yoga pose", default=""),
+    expertise_level: str = Field(description="Difficulty level: Beginner, Intermediate, or Advanced", default="Beginner"),
+    include_modifications: bool = Field(description="Include modifications and variations", default=True)
+) -> Dict:
+    """
+    Generate comprehensive pose instructions using AI.
+    
+    This tool creates detailed, step-by-step procedures for yoga poses including:
+    - Entry and exit instructions
+    - Alignment cues and safety tips
+    - Breathing guidance
+    - Common modifications and variations
+    - Benefits and contraindications
+    
+    Args:
+        pose_name: English name of the pose
+        sanskrit_name: Sanskrit name (optional)
+        expertise_level: Difficulty level for appropriate instruction depth
+        include_modifications: Whether to include pose variations
+    
+    Returns:
+        Dictionary containing comprehensive pose information and instructions
+    """
+    
+    return _generate_pose_procedure_internal(
+        pose_name=pose_name,
+        sanskrit_name=sanskrit_name,
+        expertise_level=expertise_level,
+        include_modifications=include_modifications
+    )
+
+
+@mcp.tool(
     title="Generate Pose Audio with Piper",
-    description="Generate embeddable or downloadable calming audio instructions for yoga poses using Piper TTS"
+    description="Generate calming audio instructions for yoga poses using Piper TTS with user-friendly output options"
 )
 async def generate_pose_audio_with_piper(
     asana_name: str = Field(description="Name of the yoga pose/asana to generate audio for"),
-    voice: str = Field(description="Calming voice", default="en_US-lessac-medium"),
+    voice: str = Field(description="Calming voice", default="en_US-amy-medium"),
     include_breathing_cues: bool = Field(description="Include simple breathing guidance", default=True),
-    output_format: str = Field(description="Output format: 'embedded' for inline audio, 'download' for file, 'both'", default="both"),
-    audio_directory: str = Field(description="Local directory to save audio files", default="./yoga_audio")
+    output_preference: str = Field(description="How to deliver audio: 'download_link', 'base64_data', 'save_to_user_path'", default="download_link"),
+    user_save_path: str = Field(description="User's preferred save directory (only used if output_preference is 'save_to_user_path')", default="")
 ) -> Dict:
     """
-    Generate embeddable or downloadable calming audio instructions for yoga poses using Piper TTS.
+    Generate calming audio instructions for yoga poses using Piper TTS with user-friendly delivery options.
     
-    This tool creates audio in multiple output formats:
-    - Embedded: Base64-encoded WAV for direct embedding in web/app interfaces
-    - Download: WAV file saved to user's local directory for download
-    - Both: Provides both embedded and downloadable formats
+    This tool creates audio with flexible delivery methods that respect user preferences:
+    - download_link: Creates audio file with simple download instructions (recommended for servers)
+    - base64_data: Returns base64-encoded audio data for direct use in applications
+    - save_to_user_path: Saves to user's specified directory
     
-    Embedded Audio Features:
-    - Direct HTML5 audio element support
-    - Base64 data URI for immediate playback
-    - No file system dependencies
-    - Cross-platform compatibility
-    
-    Download Features:
-    - High-quality WAV files
-    - Organized file naming
-    - Local storage for offline use
-    
-    Note: Completely free and private - no external API calls.
+    Perfect for server deployments where users have different preferences for receiving audio files.
     
     Args:
         asana_name: Name of the yoga pose to generate audio instructions for
-        voice: Piper voice model (supports multiple calming voices)
+        voice: Piper voice model (en_US-amy-medium available)
         include_breathing_cues: Whether to include simple breath guidance
-        output_format: 'embedded' for inline audio, 'download' for file, 'both' for both formats
-        audio_directory: Local directory path for saved audio files (when downloading)
+        output_preference: How to deliver the audio to the user
+        user_save_path: User's preferred save directory (only if save_to_user_path is selected)
     
     Returns:
-        Dictionary containing:
-        - embedded_audio: Data URI and HTML5 audio element (if embedded/both)
-        - download_file: Local file information (if download/both)
-        - streaming_info: Instructions for client-side usage
-        - pose_info: Metadata about the yoga pose
+        Dictionary containing audio data according to user's output preference
     """
     
     # First, get the detailed procedure for the pose
-    procedure_result = generate_pose_procedure(
+    procedure_result = _generate_pose_procedure_internal(
         pose_name=asana_name,
         sanskrit_name="",
         expertise_level="Beginner",
@@ -450,7 +458,7 @@ async def generate_pose_audio_with_piper(
     # Extract pose information
     pose_info = procedure_result.get("pose_info", {})
     
-    # Create simple, calming audio script (shorter to reduce costs)
+    # Create simple, calming audio script
     audio_script = create_simple_calming_script(
         pose_name=pose_info.get("name", asana_name),
         include_breathing_cues=include_breathing_cues
@@ -464,99 +472,100 @@ async def generate_pose_audio_with_piper(
         )
         
         if audio_result.get("success"):
-            # Prepare streaming audio data
+            # Prepare audio data
             audio_base64 = audio_result["audio_base64"]
             audio_size = audio_result["size_bytes"]
+            audio_data = base64.b64decode(audio_base64)
             
-            # Create streaming response with direct audio access
+            # Create safe filename
+            safe_name = asana_name.replace(" ", "_").replace("/", "_").lower()
+            filename = f"yoga_{safe_name}_{voice}.wav"
+            
+            # Initialize response with common info
             response = {
                 "pose_info": {
                     "name": pose_info.get("name", asana_name),
                     "type": "Free offline calming instruction"
                 },
-                "audio_data": {
-                    "audio_content": audio_base64,  # Primary streaming data
+                "audio_info": {
                     "format": "wav",
                     "voice": voice,
                     "size_bytes": audio_size,
                     "duration_estimate": "30-60 seconds",
-                    "breathing_cues_included": include_breathing_cues
-                },
-                "streaming_info": {
-                    "ready_for_streaming": True,
-                    "audio_format": "wav",
-                    "encoding": "base64",
-                    "usage": "Decode base64 to get WAV audio stream"
+                    "breathing_cues_included": include_breathing_cues,
+                    "filename": filename
                 },
                 "script_text": audio_script,
-                "cost_optimization": {
-                    "model": "piper-tts",
-                    "voice_used": voice,
-                    "note": "Completely free offline generation"
-                },
-                "generated_by": "Yoga Sequencing MCP Server - Free Offline Audio",
-                "usage_notes": "Audio ready for streaming or local storage"
+                "delivery_method": output_preference,
+                "generated_by": "Yoga Sequencing MCP Server - User-Friendly Audio"
             }
             
-            # Handle different output formats
-            should_save = output_format in ["download", "both"]
-            should_embed = output_format in ["embedded", "both"]
+            # Handle different output preferences
+            if output_preference == "download_link":
+                # Create a temporary download link
+                temp_directory = "./temp_downloads"
+                os.makedirs(temp_directory, exist_ok=True)
+                
+                temp_filepath = os.path.join(temp_directory, filename)
+                
+                # Save audio file temporarily
+                with open(temp_filepath, "wb") as f:
+                    f.write(audio_data)
+                
+                response["download_info"] = {
+                    "message": "Audio file ready for download",
+                    "filename": filename,
+                    "file_size_kb": round(len(audio_data) / 1024, 1),
+                    "download_ready": True,
+                    "user_instructions": f"Your audio file '{filename}' has been generated. You can access it from the temporary downloads folder.",
+                    "file_location": "Saved in temp_downloads directory"
+                }
             
-            if should_save:
+            elif output_preference == "base64_data":
+                # Return base64 data for direct use
+                response["audio_data"] = {
+                    "base64_content": audio_base64,
+                    "encoding": "base64",
+                    "format": "wav",
+                    "size_bytes": len(audio_data),
+                    "usage_instructions": "Decode base64 to get WAV audio data",
+                    "ready_for_streaming": True
+                }
+            
+            elif output_preference == "save_to_user_path":
+                # Save to user's specified directory
+                if not user_save_path:
+                    return {
+                        "error": "User save path required when output_preference is 'save_to_user_path'",
+                        "suggestion": "Please provide a user_save_path parameter"
+                    }
+                
                 try:
-                    # Create audio directory if it doesn't exist
-                    os.makedirs(audio_directory, exist_ok=True)
+                    # Create user directory if it doesn't exist
+                    os.makedirs(user_save_path, exist_ok=True)
                     
-                    # Create safe filename
-                    safe_name = asana_name.replace(" ", "_").replace("/", "_").lower()
-                    filename = f"yoga_{safe_name}_{voice}.wav"
-                    filepath = os.path.join(audio_directory, filename)
+                    user_filepath = os.path.join(user_save_path, filename)
                     
-                    # Decode and save audio
-                    audio_data = base64.b64decode(audio_base64)
-                    with open(filepath, "wb") as f:
+                    # Save audio file to user's path
+                    with open(user_filepath, "wb") as f:
                         f.write(audio_data)
                     
-                    response["download_file"] = {
+                    response["save_info"] = {
                         "saved": True,
-                        "filepath": filepath,
+                        "filepath": user_filepath,
                         "filename": filename,
-                        "directory": audio_directory,
-                        "file_size_bytes": len(audio_data),
-                        "download_ready": True
+                        "directory": user_save_path,
+                        "file_size_kb": round(len(audio_data) / 1024, 1),
+                        "message": f"Audio saved to your specified location: {filename}"
                     }
                     
                 except Exception as save_error:
-                    response["download_file"] = {
+                    response["save_info"] = {
                         "saved": False,
                         "error": str(save_error),
-                        "attempted_path": audio_directory,
-                        "download_ready": False
+                        "attempted_path": user_save_path,
+                        "message": "Failed to save to user-specified path"
                     }
-            
-            if should_embed:
-                try:
-                    # Create embedded audio data URI
-                    data_uri = f"data:audio/wav;base64,{audio_base64}"
-                    
-                    # Generate HTML5 audio element
-                    html_audio = f'<audio controls><source src="{data_uri}" type="audio/wav">Your browser does not support the audio element.</audio>'
-                    
-                    response["embedded_audio"] = {
-                        "data_uri": data_uri,
-                        "html_element": html_audio,
-                        "format": "base64_wav",
-                        "playback_ready": True,
-                        "usage_instructions": "Use data_uri for direct embedding or html_element for immediate HTML5 playback"
-                    }
-                except Exception as embed_error:
-                    response["embedded_audio"] = {
-                        "error": f"Failed to create embedded audio: {str(embed_error)}",
-                        "playback_ready": False
-                    }
-            
-            # Update streaming info with output format
-            response["streaming_info"]["output_format"] = output_format
             
             return response
         else:
@@ -650,7 +659,7 @@ def get_pose_details(pose_name: str) -> str:
     
     if pose_found:
         # Generate procedure for the found pose
-        procedure_result = generate_pose_procedure(
+        procedure_result = _generate_pose_procedure_internal(
             pose_name=pose_found["name"],
             sanskrit_name=pose_found["sanskrit_name"],
             expertise_level=pose_found["expertise_level"],
@@ -856,7 +865,7 @@ async def stream_pose_audio_example(pose_name: str, voice: str = "en_US-amy-medi
             asana_name=pose_name,
             voice=voice,
             include_breathing_cues=True,
-            save_locally=False  # Pure streaming, no local file
+            output_preference="base64_data"  # Pure streaming, no local file
         )
         
         if result.get("audio_data"):
